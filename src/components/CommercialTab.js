@@ -5,6 +5,9 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { useNavigation } from '@react-navigation/native'
 import ProgressDialog from 'react-native-progress-dialog';
 import { useIsFocused } from "@react-navigation/native";
+import { getRefreshToken } from '../components/RefreshTokenComponent'
+import { Value } from 'react-native-reanimated';
+
 
 const { height, width } = Dimensions.get("window")
 
@@ -13,37 +16,51 @@ const CommercialTab = () => {
     const [token, setToken] = useState("")
     const [commercialImage, setCommercialImage] = useState([])
     const [visible, setVisible] = useState(false);
+    const [progress, setProgress] = useState(false)
+    const [value, setValue] = useState("")
 
     const navigation = useNavigation()
     const isFocused = useIsFocused()
+    console.log("progress", progress)
 
     useEffect(() => {
+
         getCommercialImage()
-    }, [isFocused, token])
+        setProgress(true)
+
+    }, [isFocused, token ])
 
     useEffect(async () => {
         let userToken;
         userToken = "";
+        setTimeout(async()=>{
+
+        
 
         try {
             let user = await AsyncStorage.getItem('response');
             let parsed = JSON.parse(user);
             let userToken = parsed.access_token;
 
-            if (user !== null) {
-                setToken(userToken)
+            let refresh = await AsyncStorage.getItem("Refresh")
+            let parsedRefresh = JSON.parse(refresh)
 
+            console.log("GALLERYREFRESH", parsedRefresh)
+
+            if (parsedRefresh == null) {
+                setToken(userToken)
+                getCommercialImage()
+            } else {
+                setToken(parsedRefresh.access_token)
+                getCommercialImage()
             }
         }
         catch (error) {
-
             console.log("error", error)
         }
-        
-    }, []);
-
-
-
+    }, 3000)
+        return () => { AsyncStorage.removeItem("response") }
+    }, [isFocused]);
 
     const getCommercialImage = async () => {
         const url = `${envData.domain_name}${envData.send_image_path}`
@@ -57,29 +74,31 @@ const CommercialTab = () => {
         })
         const data = await res.json()
             .then((response) => {
-              
+                // console.log("Gallery", response.General_data)
+                console.log("galleryTok", token)
+                setProgress(false)
                 setCommercialImage(response.General_data)
-              
-                if(response.General_data.length === 0){
+
+                if (response.General_data.length === 0) {
                     setVisible(true)
                 }
             })
             .catch((err) => {
                 console.log("error", err)
-              
+
             })
     }
 
 
     const _renderItem = (item) => {
-      
+
         return (
 
-            <View style={{ marginTop: 10, width: width, flex: 1 }}>
+            <View style={{ marginTop: 6, width: width, flex: 0.25 }}>
 
                 <TouchableOpacity onPress={() => navigation.navigate("RentalScreen", { Detail: item.item })}>
                     <View style={{ flexDirection: "row", margin: 5 }}>
-                        <Image source={{ uri: item.item.photo }} style={{ height: width * 100 / 375, width: width * 90 / 375 }} />
+                        <Image source={{ uri: item.item.photo }} style={{ height: width * 100 / 375, width: width * 85 / 375 }} />
                     </View>
                 </TouchableOpacity>
 
@@ -90,24 +109,24 @@ const CommercialTab = () => {
 
 
     return (
-        <View style={{flex:1}}>
-             {visible === true ?
-            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                <Text style={{ fontSize: 20, alignSelf: "center" }}>No data available</Text>
-            </View>
-            :
-            <ScrollView>
-                <FlatList
+        <View style={{ flex: 1 }}>
+            {visible === true ?
+                <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                    <Text style={{ fontSize: 20, alignSelf: "center" }}>No data available</Text>
+                </View>
+                :
+                <ScrollView>
+                    <FlatList
                         numColumns={4}
                         data={commercialImage}
                         keyExtractor={item => item.photo}
                         renderItem={(item) => _renderItem(item)}
                     />
 
-            </ScrollView>
-}
+                </ScrollView>
+            }
         </View>
     )
 }
 
-export default memo(CommercialTab);
+export default CommercialTab;

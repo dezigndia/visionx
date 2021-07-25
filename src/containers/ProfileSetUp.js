@@ -24,8 +24,8 @@ const ProfileSetUp = () => {
             setFname(FirstName)
             setMail(Email)
 
-            console.log(TAG, "parsedProfileSetup", user)
-            console.log(TAG, "profileSet", parsed.user)
+            // console.log(TAG, "parsedProfileSetup", user)
+            // console.log(TAG, "profileSet", parsed.user)
 
         }
         catch (error) {
@@ -124,7 +124,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignSelf: 'center',
         color: "black",
-        fontSize: 22
+        fontSize: 22,
+        height: Platform.OS === "ios" ?40:null,
     },
     textInput: {
         borderColor: "black",

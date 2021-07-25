@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Image, StyleSheet, TouchableOpacity, Dimensions, PermissionsAndroid, TextInput, Text, Button, } from 'react-native'
+import { View, Image, StyleSheet, TouchableOpacity, Dimensions, PermissionsAndroid, TextInput, Text, Button, Platform } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import ImagePicker from 'react-native-image-crop-picker';
 import ImageCropPicker from 'react-native-image-crop-picker';
@@ -7,9 +7,11 @@ import envData from "../env.json"
 import AsyncStorage from '@react-native-community/async-storage';
 import Modal from 'react-native-modal';
 import ProgressDialog from 'react-native-progress-dialog';
+import { getRefreshToken } from '../components/RefreshTokenComponent'
+
 
 const TAG = "-Footer-"
-const { width } = Dimensions.get("window")
+const { width, height } = Dimensions.get("window")
 
 const Footer = () => {
     const [imagePath, setImagePath] = useState("")
@@ -21,6 +23,10 @@ const Footer = () => {
     const [showProgress, setShowProgress] = useState(false)
     const [image, setImage] = useState()
     const [detail, setDetail] = useState()
+    const [showPhysicalAddress, setShowPhysicalAddress] = useState(false)
+
+
+    console.log("DetailModal", showProgress)
 
     const navigation = useNavigation()
 
@@ -28,15 +34,26 @@ const Footer = () => {
         let userToken;
         userToken = "";
 
+        setTimeout(async()=>{
+
+       
+
         try {
             let user = await AsyncStorage.getItem('response');
             let parsed = JSON.parse(user);
             let userToken = parsed.access_token;
 
-            if (user !== null) {
 
+            let refresh = await AsyncStorage.getItem("Refresh")
+            let parsedRefresh = JSON.parse(refresh)
+            console.log("FOOTERREFRESH", parsedRefresh)
+
+            if (parsedRefresh == null) {
                 setToken(userToken)
-
+                // getCommercialImage()
+            } else {
+                setToken(parsedRefresh.access_token)
+                // getCommercialImage()
             }
 
         }
@@ -44,187 +61,312 @@ const Footer = () => {
 
             console.log("error", error)
         }
-       
-    }, []);
-    
+    },4000)
 
+        return () => { AsyncStorage.removeItem("response") }
+
+    }, []);
+
+    const requestExternalStoragePermissions = async () => {
+        const read = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        );
+        const write = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        );
+        return (
+            read === PermissionsAndroid.RESULTS.GRANTED &&
+            write === PermissionsAndroid.RESULTS.GRANTED
+        );
+    };
 
     const takePhotoFromCamera = async (props) => {
-        const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-            {
-                title: 'We need your permission',
-            },
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            console.log('can use the camera');
-            const options = {
-                title: 'Select Image',
-                customButtons: [
-                    {
-                        name: 'customOptionKey',
-                        title: 'Choose file from Custom Option'
-                    },
-                ],
-                quality: 0.2,
-                storageOptions: {
-                    skipBackup: true,
-                    path: 'images',
-                    cameraRoll: true,
-                    waitUntilSaved: true,
+        Platform.OS === 'android' ? requestExternalStoragePermissions() : null
+        // const granted = await PermissionsAndroid.request(
+        //     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        //     {
+        //         title: 'We need your permission',
+        //     },
+        // );
+        // if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('can use the camera');
+        const options = {
+            title: 'Select Image',
+            customButtons: [
+                {
+                    name: 'customOptionKey',
+                    title: 'Choose file from Custom Option'
                 },
-                width: 350,
-                height: 400,
-                cropping: true,
-                includeBase64: true,
-                includeExif: true,
-            };
+            ],
+            quality: 0.2,
+            storageOptions: {
+                skipBackup: true,
+                path: 'images',
+                cameraRoll: true,
+                waitUntilSaved: true,
+            },
+            width: 350,
+            height: 400,
+            cropping: true,
+            includeBase64: true,
+            includeExif: true,
+        };
 
-            ImagePicker.openCamera(
-                options,
+        ImagePicker.openCamera(
+            options,
 
-            ).then((response) => {
+        ).then((response) => {
 
-                if (response.didCancel) {
-                    
-                } else if (response.error) {
-                    console.log('ImagePicker Error: ', response.error);
+            if (response.didCancel) {
 
-                } else {
-                    const source = response;
-                    setShowProgress(true)
-                  
+            } else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
 
-                    const url = `${envData.domain_name}${envData.send_image_path}`
-                    fetch(url, {
-                        method: 'POST',
-                        headers: {
-                        
-                            'content-type': 'application/json',
-                            Authorization: `Bearer ${token}`
-                        },
-                        body: JSON.stringify({
-                            photo: source.data,
-                            Category: 2,
-                            address: 234,
-                            pincode: 470002
-                        })
+            } else {
+                const source = response;
+                 setShowProgress(true)
+                setShowModal(false);
+
+
+                const url = `${envData.domain_name}${envData.send_image_path}`
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+
+                        'content-type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        photo: source.data,
+                        Category: 2,
+                        address: 234,
+                        pincode: 470002
                     })
-                        .then((response) => response.json())
-                        .then((response) => {
-                            if (response.status === 200) {
-                                navigation.push("CommercialScreen", { Path: source.path, CommercialData: response.data })
-                                setShowProgress(false)
-                               
-                                AsyncStorage.setItem('CommercialImage', JSON.stringify(response.data));
-                                AsyncStorage.setItem('imagePath', JSON.stringify(source.path));
-                            }
+                })
+                    .then((response) => response.json())
+                    .then((response) => {
+                        if (response.status === 200) {
+                            navigation.push("CommercialScreen", { Path: source.path, CommercialData: response.data })
+                            setShowProgress(false)
 
-                        })
+                            AsyncStorage.setItem('CommercialImage', JSON.stringify(response.data));
+                            AsyncStorage.setItem('imagePath', JSON.stringify(source.path));
+                        }
 
-                        .catch((err) => {
-                            console.log("error", err)
-                        })
-                }
-            });
-        }
+                    })
+
+                    .catch((err) => {
+                        console.log("error", err)
+                    })
+            }
+        });
+
     };
 
     const choosePhotoFromLibrary = async (props) => {
 
-
-        const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-            {
-                title: 'We need your permission',
-            },
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            console.log('can use the camera');
-            const options = {
-                title: 'Select Image',
-                customButtons: [
-                    {
-                        name: 'customOptionKey',
-                        title: 'Choose file from Custom Option'
-                    },
-                ],
-                quality: 0.2,
-                storageOptions: {
-                    cameraRoll: true,
-                    skipBackup: true,
+        Platform.OS === 'android' ? requestExternalStoragePermissions() : null
+        // const granted = await PermissionsAndroid.request(
+        //     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        //     {
+        //         title: 'We need your permission',
+        //     },
+        // );
+        // if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('can use the camera');
+        const options = {
+            title: 'Select Image',
+            customButtons: [
+                {
+                    name: 'customOptionKey',
+                    title: 'Choose file from Custom Option'
                 },
+            ],
+            quality: 0.2,
+            storageOptions: {
+                cameraRoll: true,
+                skipBackup: true,
+            },
 
-                width: 300,
-                height: 300,
-                cropping: true,
-                includeBase64: true,
-                includeExif: true,
-            };
+            width: 300,
+            height: 300,
+            cropping: true,
+            includeBase64: true,
+            includeExif: true,
+        };
 
-            ImageCropPicker.openPicker(options).then((response) => {
-              
-                if (response.didCancel) {
-                 
-                } else if (response.error) {
-                    console.log(TAG, 'ImagePicker Error: ', response.error);
-                } else {
-                    const source = response;
-                    setShowProgress(true)
-                  
+        ImageCropPicker.openPicker(options).then((response) => {
 
-                    const url = `${envData.domain_name}${envData.send_image_path}`
-                    fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            //'Accept': 'application/json',
-                            'content-type': 'application/json',
-                            Authorization: `Bearer ${token}`
-                        },
-                        body: JSON.stringify({
-                            photo: source.data,
-                            Category: 2,
-                            address: addressData,
-                            pincode: pinCode
-                        })
+            if (response.didCancel) {
+
+            } else if (response.error) {
+                console.log(TAG, 'ImagePicker Error: ', response.error);
+            } else {
+                const source = response;
+                 setShowProgress(true)
+                setDetailModal(false)
+
+
+                const url = `${envData.domain_name}${envData.send_image_path}`
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        //'Accept': 'application/json',
+                        'content-type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        photo: source.data,
+                        Category: 2,
+                        address: addressData,
+                        pincode: pinCode
                     })
-                        .then((response) => response.json())
-                        .then((response) => {
-                         
-                            if (response.status === 200) {
-                                navigation.push("CommercialScreen", { Path: source.path, CommercialData: response.data })
-                                setShowProgress(false)
-                                setImage(source.path)
-                                setDetail(response.data)
+                })
+                    .then((response) => response.json())
+                    .then((response) => {
+                        console.log("RESPONSEFOOTER", response)
+                        console.log("FooterToken", token)
+                        if (response.status === 200) {
+                            navigation.push("CommercialScreen", { Path: source.path, CommercialData: response.data })
+                            setShowProgress(false)
 
-                                AsyncStorage.setItem('CommercialImage', JSON.stringify(response.data));
-                                AsyncStorage.setItem('imagePath', JSON.stringify(source.path));
-                            }
+                            setImage(source.path)
+                            setDetail(response.data)
 
-                        })
+                            AsyncStorage.setItem('CommercialImage', JSON.stringify(response.data));
+                            AsyncStorage.setItem('imagePath', JSON.stringify(source.path));
+                        }
 
-                        .catch((err) => {
-                            console.log("error", err)
-                        })
-                }
-            });
-        }
+                    })
+
+                    .catch((err) => {
+                        console.log("error", err)
+                    })
+            }
+        });
+
     };
+
+
+
+    // const AlertView = RNBottomActionSheet.AlertView
+    // AlertView.Show({
+    //     visible={showPhysicalAddress},
+    //     title: "Awesome!",
+    //     message: "Do you have image physical address",
+    //     positiveText: "Yes, I have",
+    //     positiveBackgroundColor: "#eeffee",
+    //     positiveTextColor: "#006500",
+    //     negativeText: "No, I dont",
+    //     negativeBackgroundColor: "#ffebeb",
+    //     negativeTextColor: "#760000",
+    //     theme: 'light',
+    //     onPositive: () => {
+    //         setDetailModal(true)
+    //         setShowShowPhysicalAddress(false)
+    //     },
+    //     onNegative: () => {
+    //         setShowShowPhysicalAddress(false)
+    //         choosePhotoFromLibrary()
+    //     }
+    // })
 
 
     return (
         <View>
             <ProgressDialog
-                visible={showProgress === true ? true : false}
+                visible={showProgress == true ? true : false}
                 loaderColor="black"
             />
+
+            {/* <RNBottomActionSheet.AlertView
+            style={{borderRadius:12}}
+                visible={showPhysicalAddress}
+                 title={"Do you have image physical address"}
+                //message={"Do you have image physical address"}
+                positiveText={"Yes, I have"}
+                positiveBackgroundColor={"#eeffee"}
+                positiveTextColor={"#006500"}
+                negativeText={"No, I dont"}
+                negativeBackgroundColor={"#808080"}
+                negativeTextColor={"#7cfc00"}
+                theme={"light"}
+                onPositive={() => {
+                    setTimeout(()=>{
+                        setDetailModal(true)
+                    },1000)
+                    
+                    setShowPhysicalAddress(false)
+                }}
+                onNegative={() => {
+                    setShowPhysicalAddress(false)
+                    setTimeout(()=>{
+                        choosePhotoFromLibrary()
+                    },1000)
+                    
+                }} /> */}
+
+            {showPhysicalAddress === true ?
+                <View >
+                    {/* <Modal
+                        transparent={true}
+                        isVisible={showPhysicalAddress}
+                        onBackButtonPress={() => {
+
+                            setShowShowPhysicalAddress(false)
+                        }}> */}
+                    <View style={styles.modalStyle} >
+                        <View style={{
+                            height: width * 120 / 375,
+                            width: width,
+                            backgroundColor: "#f8f8ff",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            borderRadius: 20,
+                            marginTop: 10
+                        }}>
+                            <Text style={{
+                                color: '#3f2949',
+                                fontWeight: "bold",
+                                fontSize: 20,
+                                alignSelf: "center",
+                            }}>Do you have image physical address</Text>
+                            <View style={{ flexDirection: "row", marginTop: 25 }}>
+                                <TouchableOpacity
+                                    style={styles.cancelButtonStyle}
+                                    onPress={() => {
+                                        setDetailModal(true)
+                                        setShowPhysicalAddress(false)
+
+                                    }}
+                                >
+                                    <Text style={styles.textStyle}>Yes, I have</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={styles.cancelButtonStyle}
+                                    onPress={() => {
+                                        setShowPhysicalAddress(false)
+                                        choosePhotoFromLibrary()
+                                    }}
+                                >
+                                    <Text style={styles.textStyle}>No, I don't</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                    {/* </Modal> */}
+                </View>
+                : null}
+
+
             {showModal === true ?
                 <View >
                     <Modal
                         transparent={true}
                         isVisible={showModal}
                         onBackButtonPress={() => {
-                           
+
                             setShowModal(false)
                         }}>
                         <View style={styles.modal}>
@@ -233,14 +375,18 @@ const Footer = () => {
                                 backgroundColor: "#ffffff",
                                 justifyContent: "center",
                                 alignItems: "center",
-                                borderRadius:15
+                                borderRadius: 15
                             }}>
                                 <TouchableOpacity
                                     style={styles.buttonStyle}
                                     onPress={() => {
+                                        // setTimeout(() => {
 
-                                        setDetailModal(true)
-                                        setShowModal(!showModal);
+                                        //     setDetailModal(true)
+                                        // }, 1000)
+
+                                        setShowModal(false)
+                                        setShowPhysicalAddress(true)
                                     }}
                                 >
 
@@ -250,7 +396,7 @@ const Footer = () => {
                                     style={styles.buttonStyle}
                                     onPress={() => {
                                         takePhotoFromCamera()
-                                        setShowModal(!showModal);
+
                                     }}
                                 >
                                     <Text style={styles.textStyle}>Launch Camera</Text>
@@ -277,16 +423,16 @@ const Footer = () => {
                         transparent={true}
                         isVisible={detailModal}
                         onBackButtonPress={() => {
-                          
+
                             setDetailModal(false)
                         }}>
                         <View style={{
 
-                              height: width * 300 / 375,
+                            height: width * 300 / 375,
                             backgroundColor: "white",
                             justifyContent: "center",
                             alignItems: "center",
-                            borderRadius:10
+                            borderRadius: 10
 
                         }}>
                             <View style={{ marginTop: 20, width: width * 300 / 375 }}>
@@ -294,7 +440,7 @@ const Footer = () => {
                                 <TextInput
                                     value={addressData}
                                     onChangeText={(addressData) => setAddressData(addressData)}
-                                    style={{ borderBottomColor: "black", borderBottomWidth: 1, fontSize: 18, color: "black" }} />
+                                    style={{ borderBottomColor: "black", borderBottomWidth: 1, fontSize: 18, color: "black", height: Platform.OS === "ios" ? 40 : null }} />
                             </View>
                             <View style={{ marginTop: 20, width: width * 300 / 375 }}>
                                 <Text style={{ fontSize: 18 }}>Zip code</Text>
@@ -302,13 +448,13 @@ const Footer = () => {
                                     keyboardType="number-pad"
                                     value={pinCode}
                                     onChangeText={(pinCode) => setPinCode(pinCode)}
-                                    style={{ borderBottomColor: "black", borderBottomWidth: 1, fontSize: 18, color: "black" }} />
+                                    style={{ borderBottomColor: "black", borderBottomWidth: 1, fontSize: 18, color: "black", height: Platform.OS === "ios" ? 40 : null, }} />
                             </View>
                             <View style={{ flexDirection: "row" }}>
                                 <TouchableOpacity
                                     style={styles.cancelButtonStyle}
                                     onPress={() => {
-                                        setDetailModal(false)
+                                        //setDetailModal(false)
                                         choosePhotoFromLibrary()
                                         setAddressData("")
                                         setPinCode("")
@@ -338,9 +484,9 @@ const Footer = () => {
 
 
                 <TouchableOpacity style={styles.viewStyle} onPress={() => {
-                   
+
                     setShowModal(true)
-                   
+
                 }}>
                     <Image source={require("../assets/BuildingCamera.png")} style={{ height: 80, width: 80 }} />
                 </TouchableOpacity>
@@ -350,7 +496,7 @@ const Footer = () => {
                     <Image source={require("../assets/BuildingSearch.png")} style={{ height: 80, width: 80 }} />
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.viewStyle} onPress={() => navigation.navigate("GalleryScreen")}>
+                <TouchableOpacity style={styles.viewStyle} onPress={() => navigation.navigate("GalleryScreen", { path: showPhysicalAddress })}>
                     <Image source={require("../assets/Gallery.png")} style={{ height: 80, width: 80 }} />
                 </TouchableOpacity>
 
@@ -394,11 +540,21 @@ const styles = StyleSheet.create({
     },
 
     modal: {
-        marginTop: 140,
+        marginTop: 100,
         height: 100,
         justifyContent: "flex-end",
         alignItems: "center",
-
+        borderRadius: 8,
+    },
+    modalStyle: {
+        //marginTop: 300,
+        //backgroundColor:"transparent",
+        //height: width*1.2,
+        justifyContent: "flex-end",
+        alignItems: "center",
+        borderRadius: 8,
+        backgroundColor: 'white',
+        opacity: 0.9
     },
     textStyle: {
         color: '#3f2949',
@@ -419,11 +575,11 @@ const styles = StyleSheet.create({
         margin: 15,
         backgroundColor: "white"
     },
-    cancelButtonStyle:{
+    cancelButtonStyle: {
         borderWidth: 1,
         borderRadius: 15,
         width: width * 120 / 375,
-        height: width*40/375,
+        height: width * 40 / 375,
         justifyContent: "center",
         alignItems: "center",
         alignSelf: "center",

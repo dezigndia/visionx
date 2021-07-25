@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useFocusEffect } from 'react'
 import {
     View, Text, StyleSheet, TextInput,
-    Button, Image, Dimensions, ScrollView, TouchableOpacity, BackHandler, Alert, ToastAndroid
+    Button, Image, Dimensions, ScrollView, TouchableOpacity, BackHandler, Alert, ToastAndroid, Platform
 } from 'react-native'
 import Header from "../components/Header"
 import Modal from 'react-native-modal';
@@ -16,6 +16,7 @@ import Menu, { MenuItem } from 'react-native-material-menu';
 import { useNavigation } from '@react-navigation/native'
 import { useIsFocused } from "@react-navigation/native"
 import { CommonActions } from '@react-navigation/native';
+import {getRefreshToken} from '../components/RefreshTokenComponent'
 
 const TAG = '-Profile.js-'
 const { height, width } = Dimensions.get("window")
@@ -37,6 +38,7 @@ const Profile = () => {
 
     useEffect(() => {
         getUserDetails()
+        
     }, [token])
 
     useEffect(async () => {
@@ -48,9 +50,18 @@ const Profile = () => {
             let parsed = JSON.parse(user);
             let userToken = parsed.access_token;
 
-            if (user !== null) {
+
+            let refresh = await AsyncStorage.getItem("Refresh")
+            let parsedRefresh = JSON.parse(refresh)
+            console.log(TAG,"PROFILEPARSED", parsedRefresh)
+
+            if (parsedRefresh == null) {
 
                 setToken(userToken)
+                getUserDetails()
+            }else{
+                 setToken(parsedRefresh.access_token)
+              
                 getUserDetails()
             }
 
@@ -98,6 +109,8 @@ const Profile = () => {
         })
         const data = await res.json()
             .then((response) => {
+                //console.log("Profile", response)
+                console.log("token", token)
                
                 setFname(response.data.first_name)
                 setLname(response.data.last_name)
@@ -149,7 +162,7 @@ const Profile = () => {
                         setProfile(false)
                         setUpdateProfile(response.data)
                       
-                        ToastAndroid.show('Profile  successfully updated ', ToastAndroid.SHORT);
+                      Platform.OS == "android" ?  ToastAndroid.show('Profile  successfully updated ', ToastAndroid.SHORT) : null;
                     }
                   
 
@@ -226,8 +239,13 @@ const Profile = () => {
     };
 
 
-    const clearAsyncStorage = async () => {
-        AsyncStorage.clear();
+    const clearAppData = async function() {
+        try {
+            const keys = await AsyncStorage.getAllKeys();
+            await AsyncStorage.multiRemove(keys);
+        } catch (error) {
+            console.error('Error clearing app data.');
+        }
     }
 
 
@@ -237,8 +255,9 @@ const Profile = () => {
             await GoogleSignin.revokeAccess();
             await GoogleSignin.signOut();
             console.log('Google signout Success');
-            //  clearAsyncStorage()
+              //clearAsyncStorage()
             AsyncStorage.clear();
+            // clearAppData()
 
             navigation.dispatch(state => {
                 // Remove the home route from the stack
@@ -359,7 +378,7 @@ const Profile = () => {
                             <TextInput
                                 onChangeText={(fname) => setFname(fname)}
                                 value={fname}
-                                style={{ borderBottomColor: "black", borderBottomWidth: 1, fontSize: 18, color: "black" }} />
+                                style={{ borderBottomColor: "black", borderBottomWidth: 1, fontSize: 18,height: Platform.OS === "ios" ?40:null,  color: "black" }} />
 
                         </View>
 
@@ -369,7 +388,7 @@ const Profile = () => {
                             <TextInput
                                 onChangeText={(lname) => setLname(lname)}
                                 value={lname}
-                                style={{ borderBottomColor: "black", borderBottomWidth: 1, fontSize: 18, color: "black" }} />
+                                style={{ borderBottomColor: "black", borderBottomWidth: 1, fontSize: 18, color: "black",height: Platform.OS === "ios" ?40:null, }} />
 
 
                         </View>
@@ -380,7 +399,7 @@ const Profile = () => {
                             <TextInput
                                 onChangeText={(email) => setEmail(email)}
                                 value={email}
-                                style={{ borderBottomColor: "black", borderBottomWidth: 1, fontSize: 18, color: "black" }} />
+                                style={{ borderBottomColor: "black", borderBottomWidth: 1, fontSize: 18, color: "black",height: Platform.OS === "ios" ?40:null, }} />
 
                         </View>
 
@@ -420,7 +439,7 @@ const Profile = () => {
                                     }
                                 }}
                                 iconComponent={
-                                    <Icon name="calendar-month" size={35} color="black" style={{ position: "absolute", right: 10, opacity: 0.7 }} />
+                                    <Icon name="calendar-month" size={30} color="black" style={{ position: "absolute", right: 8, opacity: 0.7 }} />
                                 }
 
                                 onDateChange={(selectedDate) => setFromDate(selectedDate)}
@@ -472,6 +491,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F8F8F8',
         height: 70,
         elevation: 4,
+        marginTop: Platform.OS === "ios" ? 30 : null
 
     },
     textViewStyle: {

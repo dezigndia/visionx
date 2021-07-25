@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native'
+import { View, StyleSheet, Dimensions, ImageBackground, Text } from 'react-native'
 import { GoogleSignin, statusCodes, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-community/async-storage';
 import envData from '../env.json'
@@ -19,11 +19,49 @@ class Login extends Component {
     token: {},
     apisendToken: '',
     location_access_token: '',
-    refresh_token: ''
+    refreshToken: ''
   }
+
+
   render() {
+
+    const term = "http://vision-env.eba-ufy53mde.ap-south-1.elasticbeanstalk.com/terms/"
+    const privacy = "http://vision-env.eba-ufy53mde.ap-south-1.elasticbeanstalk.com/privacy/"
     return (
       <View style={styles.container}>
+        <ImageBackground source={require("../assets/splashImage.png")}
+          style={{ width: width * 230 / 360, height: width * 260 / 360, alignItems: "flex-start", justifyContent: "flex-start", flex: 0.6 }} />
+
+        {/* <View style={{ alignItems: 'center', marginTop: 24 }}> */}
+        <Text style={{ fontSize: 16 }}>
+          By Signing in, I agree to VisionX
+        </Text>
+        <Text
+          style={{
+            fontSize: 16,
+            marginTop: 4,
+
+          }}>
+          {' '}
+          <Text
+            style={styles.tncText}
+            onPress={() => {
+              this.props.navigation.navigate("WebsiteScreen", { path: term })
+            }}
+          >
+            Terms & Conditions
+          </Text>{' '}
+          and{' '}
+          <Text
+            style={styles.tncText}
+            onPress={() => {
+              this.props.navigation.navigate("WebsiteScreen", { path: privacy })
+            }}
+          >
+            Privacy Policy
+          </Text>
+        </Text>
+
 
         <GoogleSigninButton
           style={styles.buttonStyle}
@@ -39,12 +77,14 @@ class Login extends Component {
 
   componentDidMount() {
     GoogleSignin.configure({
-     
-       webClientId: "327092130955-m34hr8u6uki2uvhcbdbi4nga8bb52hac.apps.googleusercontent.com",
+
+      iosClientId: "327092130955-fmephv0sd5p7im71co50r6h6qd1k2qa4.apps.googleusercontent.com",
+      webClientId: "327092130955-m34hr8u6uki2uvhcbdbi4nga8bb52hac.apps.googleusercontent.com"
       //androidClientid:"327092130955-m34hr8u6uki2uvhcbdbi4nga8bb52hac.apps.googleusercontent.com"
 
     })
     this.getCurrentLocation()
+
 
   }
 
@@ -55,7 +95,7 @@ class Login extends Component {
         longitude: data.coords.longitude.toString().substring(0, 8)
       })
     })
-  
+
 
   }
   async getLocationApi() {
@@ -100,18 +140,20 @@ class Login extends Component {
     })
     const data = await res.json()
       .then((response) => {
+        console.log('login', response)
 
         if (response.access_token !== "") {
           this.props.navigation.navigate('ProfileSetUp', {
             UserInfor: this.state.userDetail, type: "SNS",
             apiToken: response.access_token
           });
-         
+          // this.getRefreshToken(response.refresh_token)
+
           this.setState({
             location_access_token: response.access_token
           })
           AsyncStorage.setItem('response', JSON.stringify(response));
-        
+
           this.getLocationApi()
         }
       })
@@ -119,6 +161,8 @@ class Login extends Component {
         console.log(TAG, "error", err)
       })
   }
+
+
 
   _signInWithGoogle = async () => {
     try {
@@ -144,12 +188,12 @@ class Login extends Component {
   isSignedIn = async () => {
     const isSignedIn = await GoogleSignin.isSignedIn();
     if (isSignedIn) {
-     
+
       this.getCurrentUserInfo();
 
     } else {
       this._signInWithGoogle();
-    
+
     }
   };
 
@@ -183,8 +227,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#FFFFFF"
 
 
+  },
+
+  tncText: {
+    fontSize: 16,
+    color: "#00bfff",
+    borderBottomWidth: 0.5,
+    textDecorationLine: 'underline',
+    textDecorationColor: '#00bfff',
   },
   buttonStyle: {
     justifyContent: 'center',
@@ -193,6 +246,7 @@ const styles = StyleSheet.create({
     height: 57,
     borderWidth: 2,
     borderColor: 'blue',
+    marginTop: 30
   },
   textStyle: {
     height: 22,

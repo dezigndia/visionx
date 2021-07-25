@@ -5,10 +5,14 @@ import Header from '../components/Header'
 import TabViewExample from './TabViewExample'
 import Footer from '../components/Footer';
 
+
 const { height, width } = Dimensions.get("window")
 
-const GalleryScreen = () => {
+const GalleryScreen = ({route}) => {
     const navigation = useNavigation()
+
+// const disable = route.params.path || false   
+
 
 
     useEffect(() => {

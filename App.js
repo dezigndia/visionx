@@ -22,6 +22,7 @@
  import HomeSearchCamera from './src/components/HomeSearchCamera'
  import SplashScreen from './src/components/SplashScreen'
  import Navigation from './src/components/Navigation'
+ import WebsiteScreen from './src/containers/WebsiteScreen'
  const TAG = '-APP.js-'
  const AppStack = createStackNavigator();
  const MyStack = () => {
@@ -47,8 +48,8 @@
          setToken(userToken)
        }
  
-       console.log(TAG, "parsed", user)
-       console.log(TAG, "userToken", userToken)
+      //  console.log(TAG, "parsed", user)
+      //  console.log(TAG, "userToken", userToken)
  
      }
      catch (error) {
@@ -57,7 +58,7 @@
      }
  
    }, [token]);
-   console.log(TAG, 'token:-', token)
+
  
    return (
      <NavigationContainer>
@@ -73,7 +74,7 @@
            <AppStack.Screen name="CommercialScreen" component={CommercialScreen} options={{ headerShown: false }} />
            <AppStack.Screen name="RentalScreen" component={RentalScreen} options={{ headerShown: false }} />
            <AppStack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
-         
+           <AppStack.Screen name="WebsiteScreen" component={WebsiteScreen} options={{ headerShown: false }} />
            <AppStack.Screen name="TabViewExample" component={TabViewExample} options={{ headerShown: false }} />
            <AppStack.Screen name="HomeSearch" component={HomeSearch} options={{ headerShown: false }} />
            <AppStack.Screen name="HomeSearchCamera" component={HomeSearchCamera} options={{ headerShown: false }} />

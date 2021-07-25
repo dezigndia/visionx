@@ -11,6 +11,7 @@ import TabViewExample from '../containers/TabViewExample'
 import CommercialScreen from '../containers/CommercialScreen'
 import RentalScreen from '../containers/RentalScreen'
 import SplashScreen from './SplashScreen'
+import WebsiteScreen from '../containers/WebsiteScreen'
 
 const RootStack = createStackNavigator()
 
@@ -23,7 +24,7 @@ const Navigation = () => {
             <RootStack.Screen name="SplashScreen" component={SplashScreen} options={{ headerShown: false }} />
             <RootStack.Screen name="ProfileSetUp" component={ProfileSetUp} options={{ headerShown: false }} />
             <RootStack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
-           
+            <RootStack.Screen name="WebsiteScreen" component={WebsiteScreen} options={{ headerShown: false }} />
             <RootStack.Screen name="BuildingSearch" component={BuildingSearch} options={{ headerShown: false }} />
             <RootStack.Screen name="CommercialScreen" component={CommercialScreen} options={{ headerShown: false }} />
             <RootStack.Screen name="RentalScreen" component={RentalScreen} options={{ headerShown: false }} />

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native'
+import { Text, View, StyleSheet, Dimensions, TouchableOpacity, Platform } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native'
 
@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F8F8F8',
         height: 70,
          elevation: 4,
+         marginTop: Platform.OS === "ios" ? 30 : null
 
     },
     textViewStyle: {
