@@ -26,7 +26,7 @@ const Footer = () => {
     const [showPhysicalAddress, setShowPhysicalAddress] = useState(false)
 
 
-    console.log("DetailModal", showProgress)
+    
 
     const navigation = useNavigation()
 
@@ -46,7 +46,7 @@ const Footer = () => {
 
             let refresh = await AsyncStorage.getItem("Refresh")
             let parsedRefresh = JSON.parse(refresh)
-            console.log("FOOTERREFRESH", parsedRefresh)
+         
 
             if (parsedRefresh == null) {
                 setToken(userToken)
@@ -124,7 +124,10 @@ const Footer = () => {
 
             } else {
                 const source = response;
-                 setShowProgress(true)
+                setTimeout(()=>{
+                    setShowProgress(true)
+                },500)
+                 
                 setShowModal(false);
 
 
@@ -203,7 +206,9 @@ const Footer = () => {
                 console.log(TAG, 'ImagePicker Error: ', response.error);
             } else {
                 const source = response;
-                 setShowProgress(true)
+                setTimeout(()=>{
+                    setShowProgress(true)
+                },500)
                 setDetailModal(false)
 
 
@@ -224,8 +229,7 @@ const Footer = () => {
                 })
                     .then((response) => response.json())
                     .then((response) => {
-                        console.log("RESPONSEFOOTER", response)
-                        console.log("FooterToken", token)
+                        
                         if (response.status === 200) {
                             navigation.push("CommercialScreen", { Path: source.path, CommercialData: response.data })
                             setShowProgress(false)
@@ -249,29 +253,6 @@ const Footer = () => {
 
 
 
-    // const AlertView = RNBottomActionSheet.AlertView
-    // AlertView.Show({
-    //     visible={showPhysicalAddress},
-    //     title: "Awesome!",
-    //     message: "Do you have image physical address",
-    //     positiveText: "Yes, I have",
-    //     positiveBackgroundColor: "#eeffee",
-    //     positiveTextColor: "#006500",
-    //     negativeText: "No, I dont",
-    //     negativeBackgroundColor: "#ffebeb",
-    //     negativeTextColor: "#760000",
-    //     theme: 'light',
-    //     onPositive: () => {
-    //         setDetailModal(true)
-    //         setShowShowPhysicalAddress(false)
-    //     },
-    //     onNegative: () => {
-    //         setShowShowPhysicalAddress(false)
-    //         choosePhotoFromLibrary()
-    //     }
-    // })
-
-
     return (
         <View>
             <ProgressDialog
@@ -279,45 +260,19 @@ const Footer = () => {
                 loaderColor="black"
             />
 
-            {/* <RNBottomActionSheet.AlertView
-            style={{borderRadius:12}}
-                visible={showPhysicalAddress}
-                 title={"Do you have image physical address"}
-                //message={"Do you have image physical address"}
-                positiveText={"Yes, I have"}
-                positiveBackgroundColor={"#eeffee"}
-                positiveTextColor={"#006500"}
-                negativeText={"No, I dont"}
-                negativeBackgroundColor={"#808080"}
-                negativeTextColor={"#7cfc00"}
-                theme={"light"}
-                onPositive={() => {
-                    setTimeout(()=>{
-                        setDetailModal(true)
-                    },1000)
-                    
-                    setShowPhysicalAddress(false)
-                }}
-                onNegative={() => {
-                    setShowPhysicalAddress(false)
-                    setTimeout(()=>{
-                        choosePhotoFromLibrary()
-                    },1000)
-                    
-                }} /> */}
 
             {showPhysicalAddress === true ?
                 <View >
-                    {/* <Modal
+                    <Modal
                         transparent={true}
                         isVisible={showPhysicalAddress}
                         onBackButtonPress={() => {
 
-                            setShowShowPhysicalAddress(false)
-                        }}> */}
+                            setShowPhysicalAddress(false)
+                        }}>
                     <View style={styles.modalStyle} >
                         <View style={{
-                            height: width * 120 / 375,
+                            height: Platform.OS==="android" ? width * 150 / 375 : width*200/375,
                             width: width,
                             backgroundColor: "#f8f8ff",
                             justifyContent: "center",
@@ -335,8 +290,12 @@ const Footer = () => {
                                 <TouchableOpacity
                                     style={styles.cancelButtonStyle}
                                     onPress={() => {
-                                        setDetailModal(true)
+                                        
+                                        setTimeout(()=>{
+                                            setDetailModal(true)
+                                        },1000)
                                         setShowPhysicalAddress(false)
+                                        
 
                                     }}
                                 >
@@ -346,8 +305,12 @@ const Footer = () => {
                                 <TouchableOpacity
                                     style={styles.cancelButtonStyle}
                                     onPress={() => {
+                                        setTimeout(()=>{
+                                            choosePhotoFromLibrary()
+                                        },1000)
                                         setShowPhysicalAddress(false)
-                                        choosePhotoFromLibrary()
+                                        
+                                        
                                     }}
                                 >
                                     <Text style={styles.textStyle}>No, I don't</Text>
@@ -355,7 +318,7 @@ const Footer = () => {
                             </View>
                         </View>
                     </View>
-                    {/* </Modal> */}
+                    </Modal>
                 </View>
                 : null}
 
@@ -386,7 +349,10 @@ const Footer = () => {
                                         // }, 1000)
 
                                         setShowModal(false)
-                                        setShowPhysicalAddress(true)
+                                        setTimeout(()=>{
+                                            setShowPhysicalAddress(true)
+                                        },1000)
+                                        
                                     }}
                                 >
 
@@ -522,7 +488,6 @@ const Footer = () => {
 
 const styles = StyleSheet.create({
     mainFooter: {
-
         flexDirection: "row",
         width: width,
         height: width * 65 / 375,
@@ -547,14 +512,11 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     modalStyle: {
-        //marginTop: 300,
-        //backgroundColor:"transparent",
-        //height: width*1.2,
+        
         justifyContent: "flex-end",
         alignItems: "center",
         borderRadius: 8,
-        backgroundColor: 'white',
-        opacity: 0.9
+        flex:1
     },
     textStyle: {
         color: '#3f2949',

@@ -21,7 +21,7 @@ const CommercialTab = () => {
 
     const navigation = useNavigation()
     const isFocused = useIsFocused()
-    console.log("progress", progress)
+   
 
     useEffect(() => {
 
@@ -45,7 +45,7 @@ const CommercialTab = () => {
             let refresh = await AsyncStorage.getItem("Refresh")
             let parsedRefresh = JSON.parse(refresh)
 
-            console.log("GALLERYREFRESH", parsedRefresh)
+           
 
             if (parsedRefresh == null) {
                 setToken(userToken)
@@ -75,7 +75,7 @@ const CommercialTab = () => {
         const data = await res.json()
             .then((response) => {
                 // console.log("Gallery", response.General_data)
-                console.log("galleryTok", token)
+               
                 setProgress(false)
                 setCommercialImage(response.General_data)
 

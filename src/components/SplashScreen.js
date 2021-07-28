@@ -37,7 +37,7 @@ const SplashScreen = () => {
 
             let refresh = await AsyncStorage.getItem('Refresh')
             let parsedRefresh = JSON.parse(refresh)
-            console.log("SPlashScreen", parsed)
+           
             if (parsedRefresh == null) {
                 getRefreshToken(parsed.refresh_token)
             } else {
@@ -72,7 +72,7 @@ const SplashScreen = () => {
         })
         const data = await res.json()
             .then((response) => {
-                console.log('Refresh', response)
+              
                 setValue(response.access_token)
                 if (response.access_token !== "") {
                      setSplashScreen(false)

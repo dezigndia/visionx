@@ -18,14 +18,14 @@ const DescriptionScreenHome = ({ route }) => {
     const navigation = useNavigation()
 
     const commercialView = route.params.Detail
-    console.log("commercialView", commercialView)
+   
 
     // const restDetail =  
 
     // console.log("RESTDETAILS", restDetail)
 
     const callNumber = phone => {
-        console.log('callNumber ----> ', phone);
+       
         let phoneNumber = phone;
         if (Platform.OS !== 'android') {
             phoneNumber = `telprompt:${phone}`;

@@ -9,7 +9,7 @@ import { useNavigation } from '@react-navigation/native'
 const WebsiteScreen = ({ route }) => {
   // Passing link in navigation and getting it using params
   const link = route.params.path;
-  console.log("LInk", link)
+ 
   const navigation = useNavigation()
 
   // using webview for showing the details
@@ -20,7 +20,7 @@ const WebsiteScreen = ({ route }) => {
       <View style={styles.viewHeaderStyle}>
         {/* </View> */}
         <TouchableOpacity style={styles.userIconStyle}
-          onPress={() => navigation.navigate("GalleryScreen")}>
+          onPress={() => navigation.goBack()}>
           <Icon name="arrow-left-circle-outline" size={35}  />
         </TouchableOpacity>
       </View>
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
 
     backgroundColor: '#F8F8F8',
     marginLeft:10,
-    height:70,
+    height:  70,
 
   },
 })

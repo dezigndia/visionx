@@ -53,7 +53,7 @@ const Profile = () => {
 
             let refresh = await AsyncStorage.getItem("Refresh")
             let parsedRefresh = JSON.parse(refresh)
-            console.log(TAG,"PROFILEPARSED", parsedRefresh)
+           
 
             if (parsedRefresh == null) {
 
@@ -110,7 +110,7 @@ const Profile = () => {
         const data = await res.json()
             .then((response) => {
                 //console.log("Profile", response)
-                console.log("token", token)
+              
                
                 setFname(response.data.first_name)
                 setLname(response.data.last_name)

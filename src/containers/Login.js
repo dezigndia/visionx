@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Dimensions, ImageBackground, Text } from 'react-native'
+import { View, StyleSheet, Dimensions, ImageBackground, Text, Platform } from 'react-native'
 import { GoogleSignin, statusCodes, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-community/async-storage';
 import envData from '../env.json'
@@ -25,8 +25,8 @@ class Login extends Component {
 
   render() {
 
-    const term = "http://vision-env.eba-ufy53mde.ap-south-1.elasticbeanstalk.com/terms/"
-    const privacy = "http://vision-env.eba-ufy53mde.ap-south-1.elasticbeanstalk.com/privacy/"
+    const term = "https://api.visionworldx.com/terms/"
+    const privacy = "https://api.visionworldx.com/privacy/"
     return (
       <View style={styles.container}>
         <ImageBackground source={require("../assets/splashImage.png")}
@@ -140,7 +140,7 @@ class Login extends Component {
     })
     const data = await res.json()
       .then((response) => {
-        console.log('login', response)
+        
 
         if (response.access_token !== "") {
           this.props.navigation.navigate('ProfileSetUp', {
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: width * 335 / 375,
-    height: 57,
+    height: Platform.OS === "android" ? 57 : 50,
     borderWidth: 2,
     borderColor: 'blue',
     marginTop: 30

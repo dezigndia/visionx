@@ -22,7 +22,7 @@ export const getRefreshToken = async(token)=> {
     })
     const data = await res.json()
       .then((response) => {
-        console.log('Refresh', response)
+        
 
          AsyncStorage.setItem('Refresh', JSON.stringify(response));
       })

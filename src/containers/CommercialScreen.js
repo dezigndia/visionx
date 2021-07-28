@@ -27,7 +27,7 @@ const DescriptionScreen = ({ route }) => {
     }, [])
 
     const callNumber = phone => {
-        console.log('callNumber ----> ', phone);
+      
         let phoneNumber = phone;
         if (Platform.OS !== 'android') {
             phoneNumber = `telprompt:${phone}`;
