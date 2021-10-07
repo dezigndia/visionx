@@ -125,13 +125,18 @@ const DescriptionScreenHome = ({ route }) => {
                             <View style={{ borderBottomWidth: 0.5, borderBottomColor: "#00bfff", marginTop: 5 }} />
 
                             <View style={styles.container}>
+                                <View style={{ flexDirection: "row", justifyContent:"space-between"}}>
                                 <View style={{ flexDirection: "row" }}>
                                     <Website width={17} height={24} color="#00bfff" />
                                     <Text style={styles.textTwoStyle}>Website</Text>
                                 </View>
-                                <TouchableOpacity onPress={() => navigation.navigate("WebsiteScreen", { path: commercialView.building_metadata.Website })}>
-                                    <Text style={styles.textFourStyle}>{commercialView.building_metadata.Website}</Text>
+                                {commercialView.building_metadata.Website != "" ?
+                                <TouchableOpacity style={{height:30, width:"40%", backgroundColor:"#0471AD",marginBottom:5,
+                                 borderRadius:20, justifyContent:"center", alignItems:"center"}} onPress={() => navigation.navigate("WebsiteScreen", { path: commercialView.building_metadata.Website })}>
+                                    <Text style={styles.textFourStyle}>{"Check Website"}</Text>
                                 </TouchableOpacity>
+                                : null}
+                                </View>
                             </View>
                             <View style={{ borderBottomWidth: 0.5, borderBottomColor: "#00bfff", marginTop: 5, marginBottom: 5 }} />
 
@@ -233,14 +238,9 @@ const styles = StyleSheet.create({
         height: 20
     },
     textFourStyle: {
-        // fontFamily: "Roboto",
-        marginTop: 6,
-        justifyContent: "flex-start",
-        alignItems: "flex-start",
-        fontSize: 17,
-        width: width * 309 / 375,
-        // height: 150,
-        padding: 4
+  alignSelf:"center",
+  color:"#FFFFFF",
+  fontWeight:"bold"
     },
     viewHeaderStyle: {
         width: width,

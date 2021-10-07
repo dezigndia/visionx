@@ -23,6 +23,8 @@
  import SplashScreen from './src/components/SplashScreen'
  import Navigation from './src/components/Navigation'
  import WebsiteScreen from './src/containers/WebsiteScreen'
+import RentalPage from './src/containers/RentalPage'
+ 
  const TAG = '-APP.js-'
  const AppStack = createStackNavigator();
  const MyStack = () => {
@@ -78,6 +80,8 @@
            <AppStack.Screen name="TabViewExample" component={TabViewExample} options={{ headerShown: false }} />
            <AppStack.Screen name="HomeSearch" component={HomeSearch} options={{ headerShown: false }} />
            <AppStack.Screen name="HomeSearchCamera" component={HomeSearchCamera} options={{ headerShown: false }} />
+           <AppStack.Screen name="RentalPage" component={RentalPage} options={{ headerShown: false }} />
+
          </AppStack.Navigator>
          :
          <Navigation />

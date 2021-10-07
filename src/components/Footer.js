@@ -24,9 +24,12 @@ const Footer = () => {
     const [image, setImage] = useState()
     const [detail, setDetail] = useState()
     const [showPhysicalAddress, setShowPhysicalAddress] = useState(false)
+    const [showRentalModal, setShowRentalModal] = useState(false);
+    const [detailRentalModal, setDetailRentalModal] = useState(false)
+    const [showRentalPhysicalAddress, setShowRentalPhysicalAddress] = useState(false)
 
 
-    
+
 
     const navigation = useNavigation()
 
@@ -34,34 +37,34 @@ const Footer = () => {
         let userToken;
         userToken = "";
 
-        setTimeout(async()=>{
-
-       
-
-        try {
-            let user = await AsyncStorage.getItem('response');
-            let parsed = JSON.parse(user);
-            let userToken = parsed.access_token;
+        setTimeout(async () => {
 
 
-            let refresh = await AsyncStorage.getItem("Refresh")
-            let parsedRefresh = JSON.parse(refresh)
-         
 
-            if (parsedRefresh == null) {
-                setToken(userToken)
-                // getCommercialImage()
-            } else {
-                setToken(parsedRefresh.access_token)
-                // getCommercialImage()
+            try {
+                let user = await AsyncStorage.getItem('response');
+                let parsed = JSON.parse(user);
+                let userToken = parsed.access_token;
+
+
+                let refresh = await AsyncStorage.getItem("Refresh")
+                let parsedRefresh = JSON.parse(refresh)
+
+
+                if (parsedRefresh == null) {
+                    setToken(userToken)
+                    // getCommercialImage()
+                } else {
+                    setToken(parsedRefresh.access_token)
+                    // getCommercialImage()
+                }
+
             }
+            catch (error) {
 
-        }
-        catch (error) {
-
-            console.log("error", error)
-        }
-    },4000)
+                console.log("error", error)
+            }
+        }, 4000)
 
         return () => { AsyncStorage.removeItem("response") }
 
@@ -82,13 +85,7 @@ const Footer = () => {
 
     const takePhotoFromCamera = async (props) => {
         Platform.OS === 'android' ? requestExternalStoragePermissions() : null
-        // const granted = await PermissionsAndroid.request(
-        //     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-        //     {
-        //         title: 'We need your permission',
-        //     },
-        // );
-        // if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+
         console.log('can use the camera');
         const options = {
             title: 'Select Image',
@@ -124,10 +121,10 @@ const Footer = () => {
 
             } else {
                 const source = response;
-                setTimeout(()=>{
+                setTimeout(() => {
                     setShowProgress(true)
-                },500)
-                 
+                }, 500)
+
                 setShowModal(false);
 
 
@@ -206,9 +203,9 @@ const Footer = () => {
                 console.log(TAG, 'ImagePicker Error: ', response.error);
             } else {
                 const source = response;
-                setTimeout(()=>{
+                setTimeout(() => {
                     setShowProgress(true)
-                },500)
+                }, 500)
                 setDetailModal(false)
 
 
@@ -229,7 +226,7 @@ const Footer = () => {
                 })
                     .then((response) => response.json())
                     .then((response) => {
-                        
+
                         if (response.status === 200) {
                             navigation.push("CommercialScreen", { Path: source.path, CommercialData: response.data })
                             setShowProgress(false)
@@ -253,6 +250,178 @@ const Footer = () => {
 
 
 
+    const takeRentalPhotoFromCamera = async (props) => {
+        Platform.OS === 'android' ? requestExternalStoragePermissions() : null
+
+        console.log('can use the camera');
+        const options = {
+            title: 'Select Image',
+            customButtons: [
+                {
+                    name: 'customOptionKey',
+                    title: 'Choose file from Custom Option'
+                },
+            ],
+            quality: 0.2,
+            storageOptions: {
+                skipBackup: true,
+                path: 'images',
+                cameraRoll: true,
+                waitUntilSaved: true,
+            },
+            width: 350,
+            height: 400,
+            cropping: true,
+            includeBase64: true,
+            includeExif: true,
+        };
+
+        ImagePicker.openCamera(
+            options,
+
+        ).then((response) => {
+
+            if (response.didCancel) {
+
+            } else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+
+            } else {
+                const source = response;
+                setTimeout(() => {
+                    setShowProgress(true)
+                }, 500)
+
+                setShowModal(false);
+
+
+                const url = `${envData.domain_name}${envData.send_image_path}`
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+
+                        'content-type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        photo: source.data,
+                        Category: 1,
+                        address: 234,
+                        pincode: 470002
+                    })
+                })
+                    .then((response) => response.json())
+                    .then((response) => {
+                        if (response.status === 200) {
+                            navigation.push("RentalPage", { Path: source.path, RentalData: response.data })
+                            setShowProgress(false)
+
+                            AsyncStorage.setItem('RentalImage', JSON.stringify(response.data));
+                            AsyncStorage.setItem('imagePathRental', JSON.stringify(source.path));
+                        }
+
+                    })
+
+                    .catch((err) => {
+                        console.log("error", err)
+                    })
+            }
+        });
+
+    };
+
+    const chooseRentalPhotoFromLibrary = async (props) => {
+
+        Platform.OS === 'android' ? requestExternalStoragePermissions() : null
+        // const granted = await PermissionsAndroid.request(
+        //     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        //     {
+        //         title: 'We need your permission',
+        //     },
+        // );
+        // if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('can use the camera');
+        const options = {
+            title: 'Select Image',
+            customButtons: [
+                {
+                    name: 'customOptionKey',
+                    title: 'Choose file from Custom Option'
+                },
+            ],
+            quality: 0.2,
+            storageOptions: {
+                cameraRoll: true,
+                skipBackup: true,
+            },
+
+            width: 300,
+            height: 300,
+            cropping: true,
+            includeBase64: true,
+            includeExif: true,
+        };
+
+        ImageCropPicker.openPicker(options).then((response) => {
+
+            if (response.didCancel) {
+
+            } else if (response.error) {
+                console.log(TAG, 'ImagePicker Error: ', response.error);
+            } else {
+                const source = response;
+                setTimeout(() => {
+                    setShowProgress(true)
+                }, 500)
+                setDetailModal(false)
+
+
+                const url = `${envData.domain_name}${envData.send_image_path}`
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        //'Accept': 'application/json',
+                        'content-type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        photo: source.data,
+                        Category: 1,
+                        address: addressData,
+                        pincode: pinCode
+                    })
+                })
+                    .then((response) => response.json())
+                    .then((response) => {
+
+                        if (response.status === 200) {
+                            navigation.push("RentalPage", { Path: source.path, RentalData: response.data })
+                            setShowProgress(false)
+
+                            setImage(source.path)
+                            setDetail(response.data)
+
+                            AsyncStorage.setItem('RentalImage', JSON.stringify(response.data));
+                            AsyncStorage.setItem('imagePathRental', JSON.stringify(source.path));
+                        }
+
+                    })
+
+                    .catch((err) => {
+                        console.log("error", err)
+                    })
+            }
+        });
+
+    };
+
+
+
+
+
+
+
+
     return (
         <View>
             <ProgressDialog
@@ -270,54 +439,54 @@ const Footer = () => {
 
                             setShowPhysicalAddress(false)
                         }}>
-                    <View style={styles.modalStyle} >
-                        <View style={{
-                            height: Platform.OS==="android" ? width * 150 / 375 : width*200/375,
-                            width: width,
-                            backgroundColor: "#f8f8ff",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            borderRadius: 20,
-                            marginTop: 10
-                        }}>
-                            <Text style={{
-                                color: '#3f2949',
-                                fontWeight: "bold",
-                                fontSize: 20,
-                                alignSelf: "center",
-                            }}>Do you have image physical address</Text>
-                            <View style={{ flexDirection: "row", marginTop: 25 }}>
-                                <TouchableOpacity
-                                    style={styles.cancelButtonStyle}
-                                    onPress={() => {
-                                        
-                                        setTimeout(()=>{
-                                            setDetailModal(true)
-                                        },1000)
-                                        setShowPhysicalAddress(false)
-                                        
+                        <View style={styles.modalStyle} >
+                            <View style={{
+                                height: Platform.OS === "android" ? width * 150 / 375 : width * 200 / 375,
+                                width: width,
+                                backgroundColor: "#f8f8ff",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                borderRadius: 20,
+                                marginTop: 10
+                            }}>
+                                <Text style={{
+                                    color: '#3f2949',
+                                    fontWeight: "bold",
+                                    fontSize: 20,
+                                    alignSelf: "center",
+                                }}>Do you have image physical address</Text>
+                                <View style={{ flexDirection: "row", marginTop: 25 }}>
+                                    <TouchableOpacity
+                                        style={styles.cancelButtonStyle}
+                                        onPress={() => {
 
-                                    }}
-                                >
-                                    <Text style={styles.textStyle}>Yes, I have</Text>
-                                </TouchableOpacity>
+                                            setTimeout(() => {
+                                                setDetailModal(true)
+                                            }, 1000)
+                                            setShowPhysicalAddress(false)
 
-                                <TouchableOpacity
-                                    style={styles.cancelButtonStyle}
-                                    onPress={() => {
-                                        setTimeout(()=>{
-                                            choosePhotoFromLibrary()
-                                        },1000)
-                                        setShowPhysicalAddress(false)
-                                        
-                                        
-                                    }}
-                                >
-                                    <Text style={styles.textStyle}>No, I don't</Text>
-                                </TouchableOpacity>
+
+                                        }}
+                                    >
+                                        <Text style={styles.textStyle}>Yes, I have</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={styles.cancelButtonStyle}
+                                        onPress={() => {
+                                            setTimeout(() => {
+                                                choosePhotoFromLibrary()
+                                            }, 1000)
+                                            setShowPhysicalAddress(false)
+
+
+                                        }}
+                                    >
+                                        <Text style={styles.textStyle}>No, I don't</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
-                    </View>
                     </Modal>
                 </View>
                 : null}
@@ -349,10 +518,10 @@ const Footer = () => {
                                         // }, 1000)
 
                                         setShowModal(false)
-                                        setTimeout(()=>{
+                                        setTimeout(() => {
                                             setShowPhysicalAddress(true)
-                                        },1000)
-                                        
+                                        }, 1000)
+
                                     }}
                                 >
 
@@ -446,6 +615,203 @@ const Footer = () => {
                     </Modal>
                 </View>
                 : null}
+
+
+
+
+
+            {showRentalPhysicalAddress === true ?
+                <View >
+                    <Modal
+                        transparent={true}
+                        isVisible={showRentalPhysicalAddress}
+                        onBackButtonPress={() => {
+
+                            setShowRentalPhysicalAddress(false)
+                        }}>
+                        <View style={styles.modalStyle} >
+                            <View style={{
+                                height: Platform.OS === "android" ? width * 150 / 375 : width * 200 / 375,
+                                width: width,
+                                backgroundColor: "#f8f8ff",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                borderRadius: 20,
+                                marginTop: 10
+                            }}>
+                                <Text style={{
+                                    color: '#3f2949',
+                                    fontWeight: "bold",
+                                    fontSize: 20,
+                                    alignSelf: "center",
+                                }}>Do you have image physical address</Text>
+                                <View style={{ flexDirection: "row", marginTop: 25 }}>
+                                    <TouchableOpacity
+                                        style={styles.cancelButtonStyle}
+                                        onPress={() => {
+
+                                            setTimeout(() => {
+                                                setDetailRentalModal(true)
+                                            }, 1000)
+                                            setShowRentalPhysicalAddress(false)
+
+
+                                        }}
+                                    >
+                                        <Text style={styles.textStyle}>Yes, I have</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={styles.cancelButtonStyle}
+                                        onPress={() => {
+                                            setTimeout(() => {
+                                                chooseRentalPhotoFromLibrary()
+                                            }, 1000)
+                                            setShowRentalPhysicalAddress(false)
+
+
+                                        }}
+                                    >
+                                        <Text style={styles.textStyle}>No, I don't</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
+                </View>
+                : null}
+
+
+            {showRentalModal === true ?
+                <View >
+                    <Modal
+                        transparent={true}
+                        isVisible={showRentalModal}
+                        onBackButtonPress={() => {
+
+                            setShowRentalModal(false)
+                        }}>
+                        <View style={styles.modal}>
+                            <View style={{
+                                height: width * 300 / 375,
+                                backgroundColor: "#ffffff",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                borderRadius: 15
+                            }}>
+                                <TouchableOpacity
+                                    style={styles.buttonStyle}
+                                    onPress={() => {
+                                        // setTimeout(() => {
+
+                                        //     setDetailModal(true)
+                                        // }, 1000)
+
+                                        setShowRentalModal(false)
+                                        setTimeout(() => {
+                                            setShowRentalPhysicalAddress(true)
+                                        }, 1000)
+
+                                    }}
+                                >
+
+                                    <Text style={styles.textStyle}>Choose Photo from Gallery</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.buttonStyle}
+                                    onPress={() => {
+                                        takeRentalPhotoFromCamera()
+
+                                    }}
+                                >
+                                    <Text style={styles.textStyle}>Launch Camera</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={styles.cancelButtonStyle}
+                                    onPress={() => {
+                                        setShowRentalModal(!showRentalModal);
+                                    }}
+                                >
+                                    <Text style={styles.textStyle}>Cancel</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </Modal>
+                </View>
+                : null}
+
+            {detailRentalModal === true ?
+
+                <View>
+                    <Modal
+                        transparent={true}
+                        isVisible={detailRentalModal}
+                        onBackButtonPress={() => {
+
+                            setDetailRentalModal(false)
+                        }}>
+                        <View style={{
+
+                            height: width * 300 / 375,
+                            backgroundColor: "white",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            borderRadius: 10
+
+                        }}>
+                            <View style={{ marginTop: 20, width: width * 300 / 375 }}>
+                                <Text style={{ fontSize: 18 }}>Address</Text>
+                                <TextInput
+                                    value={addressData}
+                                    onChangeText={(addressData) => setAddressData(addressData)}
+                                    style={{ borderBottomColor: "black", borderBottomWidth: 1, fontSize: 18, color: "black", height: Platform.OS === "ios" ? 40 : null }} />
+                            </View>
+                            <View style={{ marginTop: 20, width: width * 300 / 375 }}>
+                                <Text style={{ fontSize: 18 }}>Zip code</Text>
+                                <TextInput
+                                    keyboardType="number-pad"
+                                    value={pinCode}
+                                    onChangeText={(pinCode) => setPinCode(pinCode)}
+                                    style={{ borderBottomColor: "black", borderBottomWidth: 1, fontSize: 18, color: "black", height: Platform.OS === "ios" ? 40 : null, }} />
+                            </View>
+                            <View style={{ flexDirection: "row" }}>
+                                <TouchableOpacity
+                                    style={styles.cancelButtonStyle}
+                                    onPress={() => {
+                                        //setDetailModal(false)
+                                        chooseRentalPhotoFromLibrary()
+                                        setAddressData("")
+                                        setPinCode("")
+                                    }}
+                                >
+                                    <Text style={styles.textStyle}>Ok</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={styles.cancelButtonStyle}
+                                    onPress={() => {
+                                        setDetailRentalModal(false)
+                                        setAddressData("")
+                                        setPinCode("")
+                                    }}
+                                >
+                                    <Text style={styles.textStyle}>Cancel</Text>
+                                </TouchableOpacity>
+                            </View>
+
+
+                        </View>
+                    </Modal>
+                </View>
+                : null}
+
+
+
+
+
+
+
             <View style={styles.mainFooter}>
 
 
@@ -476,9 +842,9 @@ const Footer = () => {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    disabled={true}
+
                     style={styles.viewStyle}
-                    onPress={() => navigation.navigate("Profile")}>
+                    onPress={() => setShowRentalModal(true)}>
                     <Image source={require("../assets/HomeSearch.png")} style={{ height: 80, width: 80 }} />
                 </TouchableOpacity>
             </View>
@@ -512,11 +878,11 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     modalStyle: {
-        
+
         justifyContent: "flex-end",
         alignItems: "center",
         borderRadius: 8,
-        flex:1
+        flex: 1
     },
     textStyle: {
         color: '#3f2949',

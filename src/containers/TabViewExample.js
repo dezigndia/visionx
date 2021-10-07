@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Dimensions, Text } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import CommercialTab from "../components/CommercialTab"
+import RentalTab from '../components/RentalTab';
 const CommercialRoute = () => (
   
   <View style={styles.scene} />,
@@ -9,9 +10,7 @@ const CommercialRoute = () => (
 );
 const RentalRoute = () => (
   <View style={styles.scene} />,
-  <View  style={{flex:1,justifyContent:"center", alignItems:"center"}}>
-  <Text style={{fontSize:22}}>Coming Soon..</Text>
-  </View>
+ <RentalTab />
 );
 const initialLayout = { width: Dimensions.get('window').width };
 const TabViewExample = (props) => {
