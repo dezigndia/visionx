@@ -74,12 +74,12 @@ const RentalTab = () => {
         })
         const data = await res.json()
             .then((response) => {
-                 console.log("Gallery", response)
+                 //console.log("Gallery", response)
                
                 setProgress(false)
-                setRentalImage(response.Rental_Data)
+                setRentalImage(response.rental)
 
-                if (response.General_data.length === 0) {
+                if (response.rental.length === 0) {
                     setVisible(true)
                 }
             })

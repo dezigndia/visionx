@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import Modal from 'react-native-modal';
 import ProgressDialog from 'react-native-progress-dialog';
 import { getRefreshToken } from '../components/RefreshTokenComponent'
+import Geolocation from '@react-native-community/geolocation'
 
 
 const TAG = "-Footer-"
@@ -23,13 +24,17 @@ const Footer = () => {
     const [showProgress, setShowProgress] = useState(false)
     const [image, setImage] = useState()
     const [detail, setDetail] = useState()
+    const [latitude, setLatitude] = useState("")
+    const [longitude, setLongitude] = useState("")
     const [showPhysicalAddress, setShowPhysicalAddress] = useState(false)
     const [showRentalModal, setShowRentalModal] = useState(false);
     const [detailRentalModal, setDetailRentalModal] = useState(false)
     const [showRentalPhysicalAddress, setShowRentalPhysicalAddress] = useState(false)
 
 
-
+    useEffect(() => {
+        getCurrentLocationCoordinates()
+    }, [latitude, longitude])
 
     const navigation = useNavigation()
 
@@ -83,6 +88,18 @@ const Footer = () => {
         );
     };
 
+
+    const getCurrentLocationCoordinates = () => {
+        Geolocation.getCurrentPosition(data => {
+            setLatitude(data.coords.latitude.toString().substring(0, 8))
+                setLongitude(data.coords.longitude.toString().substring(0, 8))
+        })
+    }
+
+// console.log(("LATITUDE", latitude));
+// console.log(("LATITUDE", longitude));
+
+
     const takePhotoFromCamera = async (props) => {
         Platform.OS === 'android' ? requestExternalStoragePermissions() : null
 
@@ -127,8 +144,8 @@ const Footer = () => {
 
                 setShowModal(false);
 
-
-                const url = `${envData.domain_name}${envData.send_image_path}`
+                const url = `${envData.domain_name}api/ML/predict/?latitude=${latitude}&longitude=${longitude}`
+              
                 fetch(url, {
                     method: 'POST',
                     headers: {
@@ -295,7 +312,8 @@ const Footer = () => {
                 setShowModal(false);
 
 
-                const url = `${envData.domain_name}${envData.send_image_path}`
+                //const url = `${envData.domain_name}${envData.send_image_path}`
+                const url = `${envData.domain_name}api/ML/predict/?latitude=${latitude}&longitude=${longitude}`
                 fetch(url, {
                     method: 'POST',
                     headers: {

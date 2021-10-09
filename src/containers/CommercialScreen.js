@@ -27,7 +27,7 @@ const DescriptionScreen = ({ route }) => {
     }, [])
 
     const callNumber = phone => {
-      
+
         let phoneNumber = phone;
         if (Platform.OS !== 'android') {
             phoneNumber = `telprompt:${phone}`;
@@ -94,7 +94,7 @@ const DescriptionScreen = ({ route }) => {
                                     <View style={{ borderBottomWidth: 0.5, borderBottomColor: "#00bfff", marginTop: 5 }} />
                                     <View style={styles.container}>
                                         <View style={{ flexDirection: "row" }}>
-                                        <Address width={17} height={24} color="#00bfff" />
+                                            <Address width={17} height={24} color="#00bfff" />
                                             <Text style={styles.textTwoStyle}>Address</Text>
                                         </View>
                                         <Text style={styles.textOneStyle}>{detail.metadata.Address}</Text>
@@ -103,7 +103,7 @@ const DescriptionScreen = ({ route }) => {
 
                                     <View style={styles.container}>
                                         <View style={{ flexDirection: "row" }}>
-                                        <Call width={17} height={24} color="#00bfff" />
+                                            <Call width={17} height={24} color="#00bfff" />
                                             <Text style={styles.textTwoStyle}>Phone Number</Text>
                                         </View>
                                         <TouchableOpacity onPress={() => callNumber(detail.metadata.Phone)}>
@@ -114,15 +114,22 @@ const DescriptionScreen = ({ route }) => {
                                     <View style={{ borderBottomWidth: 0.5, borderBottomColor: "#00bfff", marginTop: 5 }} />
 
                                     <View style={styles.container}>
-                                        <View style={{ flexDirection: "row" }}>
-                                        <Website width={17} height={24} color="#00bfff" />
-                                            <Text style={styles.textTwoStyle}>Website</Text>
+                                        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                                            <View style={{ flexDirection: "row" }}>
+                                                <Website width={17} height={24} color="#00bfff" />
+                                                <Text style={styles.textTwoStyle}>Website</Text>
+                                            </View>
+                                            {detail.metadata.Website != "" ?
+                                                <TouchableOpacity style={{
+                                                    height: 30, width: "40%", backgroundColor: "#0471AD", marginBottom: 5,
+                                                    borderRadius: 20, justifyContent: "center", alignItems: "center"
+                                                }} onPress={() => navigation.navigate("WebsiteScreen", { path: detail.metadata.Website })}>
+                                                    <Text style={styles.textFourStyle}>{"Check Website"}</Text>
+                                                </TouchableOpacity>
+                                                : null}
                                         </View>
-                                        <TouchableOpacity onPress={() => navigation.navigate("WebsiteScreen", { path: detail.metadata.Website })}>
-                                            <Text style={styles.textFourStyle}>{detail.metadata.Website}</Text>
-                                        </TouchableOpacity>
                                     </View>
-                                    <View style={{ borderBottomWidth: 0.5, borderBottomColor: "#00bfff", marginTop: 5, marginBottom:5 }} />
+                                    <View style={{ borderBottomWidth: 0.5, borderBottomColor: "#00bfff", marginTop: 5, marginBottom: 5 }} />
 
                                     {Object.keys(detail.metadata).map((key => {
 
@@ -221,13 +228,9 @@ const styles = StyleSheet.create({
         height: 20
     },
     textFourStyle: {
-        fontFamily: "Roboto",
-        marginTop: 6,
-        justifyContent: "flex-start",
-        alignItems: "flex-start",
-        fontSize: 17,
-        width: width * 309 / 375,
-        //height: 100
+        alignSelf: "center",
+        color: "#FFFFFF",
+        fontWeight: "bold"
     },
     viewHeaderStyle: {
         width: width,

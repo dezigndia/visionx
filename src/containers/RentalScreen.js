@@ -18,14 +18,14 @@ const DescriptionScreenHome = ({ route }) => {
     const navigation = useNavigation()
 
     const commercialView = route.params.Detail
-   
+
 
     // const restDetail =  
 
     // console.log("RESTDETAILS", restDetail)
 
     const callNumber = phone => {
-       
+
         let phoneNumber = phone;
         if (Platform.OS !== 'android') {
             phoneNumber = `telprompt:${phone}`;
@@ -125,17 +125,19 @@ const DescriptionScreenHome = ({ route }) => {
                             <View style={{ borderBottomWidth: 0.5, borderBottomColor: "#00bfff", marginTop: 5 }} />
 
                             <View style={styles.container}>
-                                <View style={{ flexDirection: "row", justifyContent:"space-between"}}>
-                                <View style={{ flexDirection: "row" }}>
-                                    <Website width={17} height={24} color="#00bfff" />
-                                    <Text style={styles.textTwoStyle}>Website</Text>
-                                </View>
-                                {commercialView.building_metadata.Website != "" ?
-                                <TouchableOpacity style={{height:30, width:"40%", backgroundColor:"#0471AD",marginBottom:5,
-                                 borderRadius:20, justifyContent:"center", alignItems:"center"}} onPress={() => navigation.navigate("WebsiteScreen", { path: commercialView.building_metadata.Website })}>
-                                    <Text style={styles.textFourStyle}>{"Check Website"}</Text>
-                                </TouchableOpacity>
-                                : null}
+                                <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                                    <View style={{ flexDirection: "row" }}>
+                                        <Website width={17} height={24} color="#00bfff" />
+                                        <Text style={styles.textTwoStyle}>Website</Text>
+                                    </View>
+                                    {commercialView.building_metadata.Website != "" ?
+                                        <TouchableOpacity style={{
+                                            height: 30, width: "40%", backgroundColor: "#0471AD", marginBottom: 5,
+                                            borderRadius: 20, justifyContent: "center", alignItems: "center"
+                                        }} onPress={() => navigation.navigate("WebsiteScreen", { path: commercialView.building_metadata.Website })}>
+                                            <Text style={styles.textFourStyle}>{"Check Website"}</Text>
+                                        </TouchableOpacity>
+                                        : null}
                                 </View>
                             </View>
                             <View style={{ borderBottomWidth: 0.5, borderBottomColor: "#00bfff", marginTop: 5, marginBottom: 5 }} />
@@ -143,15 +145,15 @@ const DescriptionScreenHome = ({ route }) => {
 
                             {Object.keys(commercialView.building_metadata).map((key => {
 
-                                if(key !== "Phone" && key !== "Address" && key !== "Website"){
+                                if (key !== "Phone" && key !== "Address" && key !== "Website") {
 
-                                return (
+                                    return (
 
-                                    <View style={styles.containerStyle}>
-                                        <Text style={styles.textTwoStyle}>{key} :  </Text>
-                                        <Text style={styles.keyTextStyle}>{commercialView.building_metadata[key]}</Text>
-                                    </View>
-                                )
+                                        <View style={styles.containerStyle}>
+                                            <Text style={styles.textTwoStyle}>{key} :  </Text>
+                                            <Text style={styles.keyTextStyle}>{commercialView.building_metadata[key]}</Text>
+                                        </View>
+                                    )
                                 }
 
                             }))}
@@ -220,13 +222,13 @@ const styles = StyleSheet.create({
         textAlign: "left",
         marginTop: 6
     },
-    keyTextStyle:{
+    keyTextStyle: {
         marginRight: 10,
         justifyContent: "flex-start",
         alignItems: "flex-start",
         fontSize: 17,
         paddingRight: 10,
-        textAlign: "left", 
+        textAlign: "left",
     },
     textThreeStyle: {
         // fontFamily: "Roboto",
@@ -238,9 +240,9 @@ const styles = StyleSheet.create({
         height: 20
     },
     textFourStyle: {
-  alignSelf:"center",
-  color:"#FFFFFF",
-  fontWeight:"bold"
+        alignSelf: "center",
+        color: "#FFFFFF",
+        fontWeight: "bold"
     },
     viewHeaderStyle: {
         width: width,
