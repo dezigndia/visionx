@@ -109,7 +109,7 @@ const Profile = () => {
         })
         const data = await res.json()
             .then((response) => {
-                //console.log("Profile", response)
+               // console.log("Profile", token)
               
                
                 setFname(response.data.first_name)

@@ -13,6 +13,7 @@ import RentalScreen from '../containers/RentalScreen'
 import SplashScreen from './SplashScreen'
 import WebsiteScreen from '../containers/WebsiteScreen'
 import RentalPage from '../containers/RentalPage'
+import SearchScreen from '../containers/SearchScreen'
 
 const RootStack = createStackNavigator()
 
@@ -32,6 +33,7 @@ const Navigation = () => {
             <RootStack.Screen name="Login" component={Login} options={{ headerShown: false }} />
             <RootStack.Screen name="RentalPage" component={RentalPage} options={{ headerShown: false }} />
             <RootStack.Screen name="HomeSearch" component={HomeSearch} options={{ headerShown: false }} />
+            <RootStack.Screen name="SearchScreen" component={SearchScreen} options={{ headerShown: false }} />
         </RootStack.Navigator>
     )
 }

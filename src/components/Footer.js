@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Image, StyleSheet, TouchableOpacity, Dimensions, PermissionsAndroid, TextInput, Text, Button, Platform } from 'react-native'
+import { View, Image, StyleSheet, TouchableOpacity, Dimensions, PermissionsAndroid, TextInput, Text, Button, Platform, FlatList } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import ImagePicker from 'react-native-image-crop-picker';
 import ImageCropPicker from 'react-native-image-crop-picker';
@@ -9,6 +9,7 @@ import Modal from 'react-native-modal';
 import ProgressDialog from 'react-native-progress-dialog';
 import { getRefreshToken } from '../components/RefreshTokenComponent'
 import Geolocation from '@react-native-community/geolocation'
+import { ListItem, SearchBar } from 'react-native-elements';
 
 
 const TAG = "-Footer-"
@@ -30,6 +31,9 @@ const Footer = () => {
     const [showRentalModal, setShowRentalModal] = useState(false);
     const [detailRentalModal, setDetailRentalModal] = useState(false)
     const [showRentalPhysicalAddress, setShowRentalPhysicalAddress] = useState(false)
+    const [searchDetail, setSearchDetail] = useState([])
+    const [search, setSearch] = useState("")
+    const [serverData, setServerData] = useState([]);
 
 
     useEffect(() => {
@@ -92,14 +96,9 @@ const Footer = () => {
     const getCurrentLocationCoordinates = () => {
         Geolocation.getCurrentPosition(data => {
             setLatitude(data.coords.latitude.toString().substring(0, 8))
-                setLongitude(data.coords.longitude.toString().substring(0, 8))
+            setLongitude(data.coords.longitude.toString().substring(0, 8))
         })
     }
-
-// console.log(("LATITUDE", latitude));
-// console.log(("LATITUDE", longitude));
-
-
     const takePhotoFromCamera = async (props) => {
         Platform.OS === 'android' ? requestExternalStoragePermissions() : null
 
@@ -145,7 +144,7 @@ const Footer = () => {
                 setShowModal(false);
 
                 const url = `${envData.domain_name}api/ML/predict/?latitude=${latitude}&longitude=${longitude}`
-              
+
                 fetch(url, {
                     method: 'POST',
                     headers: {
@@ -227,6 +226,13 @@ const Footer = () => {
 
 
                 const url = `${envData.domain_name}${envData.send_image_path}`
+                const body = {
+                    photo: source.data,
+                    Category: 2,
+                    address: search,
+                    pincode: pinCode
+                }
+                console.log("BODY_COMMERCIAL", body.address)
                 fetch(url, {
                     method: 'POST',
                     headers: {
@@ -234,19 +240,16 @@ const Footer = () => {
                         'content-type': 'application/json',
                         Authorization: `Bearer ${token}`
                     },
-                    body: JSON.stringify({
-                        photo: source.data,
-                        Category: 2,
-                        address: addressData,
-                        pincode: pinCode
-                    })
+                    body: JSON.stringify(body)
                 })
+
                     .then((response) => response.json())
                     .then((response) => {
 
                         if (response.status === 200) {
                             navigation.push("CommercialScreen", { Path: source.path, CommercialData: response.data })
                             setShowProgress(false)
+                            setSearch("")
 
                             setImage(source.path)
                             setDetail(response.data)
@@ -265,6 +268,43 @@ const Footer = () => {
 
     };
 
+    useEffect(() => {
+        const url = "https://api.visionworldx.com/api/ML/address/"
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                //'Accept': 'application/json',
+                'content-type': 'application/json',
+                Authorization: `Bearer ${token}`
+            }
+
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                //console.log("responseJSON", responseJson)
+                //Successful response from the API Call
+                setServerData(responseJson);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }, [token]);
+
+
+
+    searchFilterFunction = text => {
+        const newData = serverData.data.filter(item => {
+            const itemData = item.toUpperCase();
+            // console.log("ITEM", item)
+            const textData = text.toUpperCase();
+            // console.log("ItemData", itemData)
+            return itemData.indexOf(textData) > -1;
+        });
+        //console.log("newData", newData)
+        setSearchDetail(newData)
+        setSearch(text)
+        // this.setState({ data: newData });
+    };
 
 
     const takeRentalPhotoFromCamera = async (props) => {
@@ -309,7 +349,7 @@ const Footer = () => {
                     setShowProgress(true)
                 }, 500)
 
-                setShowModal(false);
+                setShowRentalModal(false);
 
 
                 //const url = `${envData.domain_name}${envData.send_image_path}`
@@ -391,10 +431,17 @@ const Footer = () => {
                 setTimeout(() => {
                     setShowProgress(true)
                 }, 500)
-                setDetailModal(false)
+                setDetailRentalModal(false)
 
 
                 const url = `${envData.domain_name}${envData.send_image_path}`
+                const body = {
+                    photo: source.data,
+                    Category: 1,
+                    address: search,
+                    pincode: pinCode
+                }
+                console.log("URLRental_BODY", body.address)
                 fetch(url, {
                     method: 'POST',
                     headers: {
@@ -402,13 +449,10 @@ const Footer = () => {
                         'content-type': 'application/json',
                         Authorization: `Bearer ${token}`
                     },
-                    body: JSON.stringify({
-                        photo: source.data,
-                        Category: 1,
-                        address: addressData,
-                        pincode: pinCode
-                    })
+                    body: JSON.stringify(body)
+
                 })
+
                     .then((response) => response.json())
                     .then((response) => {
 
@@ -418,6 +462,7 @@ const Footer = () => {
 
                             setImage(source.path)
                             setDetail(response.data)
+                            setSearch("")
 
                             AsyncStorage.setItem('RentalImage', JSON.stringify(response.data));
                             AsyncStorage.setItem('imagePathRental', JSON.stringify(source.path));
@@ -432,12 +477,6 @@ const Footer = () => {
         });
 
     };
-
-
-
-
-
-
 
 
     return (
@@ -530,10 +569,6 @@ const Footer = () => {
                                 <TouchableOpacity
                                     style={styles.buttonStyle}
                                     onPress={() => {
-                                        // setTimeout(() => {
-
-                                        //     setDetailModal(true)
-                                        // }, 1000)
 
                                         setShowModal(false)
                                         setTimeout(() => {
@@ -581,28 +616,58 @@ const Footer = () => {
                         }}>
                         <View style={{
 
-                            height: width * 300 / 375,
+                            height: "100%",
                             backgroundColor: "white",
                             justifyContent: "center",
                             alignItems: "center",
-                            borderRadius: 10
+                            borderRadius: 10,
+                            width: "100%"
 
                         }}>
-                            <View style={{ marginTop: 20, width: width * 300 / 375 }}>
+                            <View style={{ width: "100%", height: 60, marginBottom: 40 }}>
+                                <SearchBar
+                                    placeholder="Type Here..."
+                                    lightTheme
+                                    round
+                                    onChangeText={text => {
+                                        searchFilterFunction(text),
+                                            console.log("Text", search)
+                                        setSearch(text)
+                                    }}
+                                    value={search}
+                                    ref={search => search}
+                                //autoCorrect={false}
+                                />
+                            </View>
+                            <FlatList
+                                data={searchDetail}
+                                renderItem={({ item }) => {
+                                    return (
+                                        <TouchableOpacity onPress={() => {
+                                            setSearch(item)
+                                            console.log("Search", search)
+                                        }} style={{ height: 50, width: "90%", borderWidth: 1, borderColor: "#000000", marginBottom: 10, backgroundColor: "#D9F5F8", justifyContent: "center", borderRadius: 10 }}>
+                                            <Text style={{ alignSelf: 'center', textAlign: "left" }}>{item}</Text>
+                                        </TouchableOpacity>
+                                    )
+                                }}
+                            />
+
+                            {/* <View style={{ marginTop: 20, width: width * 300 / 375 }}>
                                 <Text style={{ fontSize: 18 }}>Address</Text>
                                 <TextInput
                                     value={addressData}
                                     onChangeText={(addressData) => setAddressData(addressData)}
                                     style={{ borderBottomColor: "black", borderBottomWidth: 1, fontSize: 18, color: "black", height: Platform.OS === "ios" ? 40 : null }} />
-                            </View>
-                            <View style={{ marginTop: 20, width: width * 300 / 375 }}>
+                            </View> */}
+                            {/* <View style={{ marginTop: 20, width: width * 300 / 375 }}>
                                 <Text style={{ fontSize: 18 }}>Zip code</Text>
                                 <TextInput
                                     keyboardType="number-pad"
                                     value={pinCode}
                                     onChangeText={(pinCode) => setPinCode(pinCode)}
                                     style={{ borderBottomColor: "black", borderBottomWidth: 1, fontSize: 18, color: "black", height: Platform.OS === "ios" ? 40 : null, }} />
-                            </View>
+                            </View> */}
                             <View style={{ flexDirection: "row" }}>
                                 <TouchableOpacity
                                     style={styles.cancelButtonStyle}
@@ -633,10 +698,6 @@ const Footer = () => {
                     </Modal>
                 </View>
                 : null}
-
-
-
-
 
             {showRentalPhysicalAddress === true ?
                 <View >
@@ -771,14 +832,53 @@ const Footer = () => {
                         }}>
                         <View style={{
 
-                            height: width * 300 / 375,
+                            height: "100%",
                             backgroundColor: "white",
                             justifyContent: "center",
                             alignItems: "center",
-                            borderRadius: 10
+                            borderRadius: 10,
+                            width: "100%"
 
                         }}>
-                            <View style={{ marginTop: 20, width: width * 300 / 375 }}>
+                            <View style={{ width: "100%", height: 60, marginBottom: 40 }}>
+                                <SearchBar
+                                    placeholder="Type Here..."
+                                    lightTheme
+                                    round
+                                    onChangeText={text => {
+                                        searchFilterFunction(text),
+                                            console.log("Text", search)
+                                    }}
+                                    value={search}
+                                    ref={search => search}
+                                //autoCorrect={false}
+                                />
+                            </View>
+                            <FlatList
+                                data={searchDetail}
+                                renderItem={({ item }) => {
+                                    return (
+                                        <TouchableOpacity onPress={() => {
+                                            setSearch(item)
+                                            console.log("Search", search)
+                                        }} style={{ height: 50, width: "90%", borderWidth: 1, borderColor: "#000000", marginBottom: 10, backgroundColor: "#D9F5F8", justifyContent: "center", borderRadius: 10 }}>
+                                            <Text style={{ alignSelf: 'center', textAlign: "left" }}>{item}</Text>
+                                        </TouchableOpacity>
+                                    )
+                                }}
+                            />
+
+
+
+
+
+
+
+
+
+
+
+                            {/* <View style={{ marginTop: 20, width: width * 300 / 375 }}>
                                 <Text style={{ fontSize: 18 }}>Address</Text>
                                 <TextInput
                                     value={addressData}
@@ -792,7 +892,7 @@ const Footer = () => {
                                     value={pinCode}
                                     onChangeText={(pinCode) => setPinCode(pinCode)}
                                     style={{ borderBottomColor: "black", borderBottomWidth: 1, fontSize: 18, color: "black", height: Platform.OS === "ios" ? 40 : null, }} />
-                            </View>
+                            </View> */}
                             <View style={{ flexDirection: "row" }}>
                                 <TouchableOpacity
                                     style={styles.cancelButtonStyle}

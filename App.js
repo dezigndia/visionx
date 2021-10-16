@@ -24,6 +24,7 @@
  import Navigation from './src/components/Navigation'
  import WebsiteScreen from './src/containers/WebsiteScreen'
 import RentalPage from './src/containers/RentalPage'
+import SearchScreen from './src/containers/SearchScreen'
  
  const TAG = '-APP.js-'
  const AppStack = createStackNavigator();
@@ -81,6 +82,7 @@ import RentalPage from './src/containers/RentalPage'
            <AppStack.Screen name="HomeSearch" component={HomeSearch} options={{ headerShown: false }} />
            <AppStack.Screen name="HomeSearchCamera" component={HomeSearchCamera} options={{ headerShown: false }} />
            <AppStack.Screen name="RentalPage" component={RentalPage} options={{ headerShown: false }} />
+           <AppStack.Screen name="SearchScreen" component={SearchScreen} options={{ headerShown: false }} />
 
          </AppStack.Navigator>
          :

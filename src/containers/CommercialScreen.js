@@ -26,6 +26,7 @@ const DescriptionScreen = ({ route }) => {
         setDetail(commercialDetail)
     }, [])
 
+    console.log("DETAIL_COMMER", detail)
     const callNumber = phone => {
 
         let phoneNumber = phone;
@@ -45,6 +46,46 @@ const DescriptionScreen = ({ route }) => {
             })
             .catch(err => console.log(err));
     };
+
+
+    const walkDetail = () => {
+
+        for (i = 0; i < detail.metadata.Walk.length; i++) {
+            return (
+                <ScrollView
+                    horizontal
+                    style={{ height: 40, width: 360, marginLeft: 15, alignSelf: "center" }}
+                >
+                    <TouchableOpacity style={{
+                        height: 30, width: 100, backgroundColor: "#0471AD", marginBottom: 5, marginRight: 10,
+                        borderRadius: 20, justifyContent: "center", alignItems: "center"
+                    }} onPress={() => navigation.navigate("WebsiteScreen", { path: detail.metadata.Walk[i] })}>
+                        <Text style={styles.textFourStyle}>{"Walk " + (i + 1)}</Text>
+                    </TouchableOpacity>
+                </ScrollView>
+            )
+        }
+    }
+
+
+    const videoDetail = () => {
+
+        for (j = 0; j < detail.metadata.Video.length; j++) {
+            return (
+                <ScrollView
+                    horizontal
+                    style={{ height: 40, width: 360, marginLeft: 15, alignSelf: "center" }}
+                >
+                    <TouchableOpacity style={{
+                        height: 30, width: 100, backgroundColor: "#0471AD", marginBottom: 5, marginRight: 10,
+                        borderRadius: 20, justifyContent: "center", alignItems: "center"
+                    }} onPress={() => navigation.navigate("WebsiteScreen", { path: detail.metadata.Video[j] })}>
+                        <Text style={styles.textFourStyle}>{"Video " + (j + 1)}</Text>
+                    </TouchableOpacity>
+                </ScrollView>
+            )
+        }
+    }
 
     return (
 
@@ -131,9 +172,80 @@ const DescriptionScreen = ({ route }) => {
                                     </View>
                                     <View style={{ borderBottomWidth: 0.5, borderBottomColor: "#00bfff", marginTop: 5, marginBottom: 5 }} />
 
+                                    <View style={styles.container}>
+                                        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                                            <View style={{ flexDirection: "row" }}>
+                                                <Website width={17} height={24} color="#00bfff" />
+                                                <Text style={styles.textTwoStyle}>Walk :</Text>
+                                            </View>
+
+                                            {detail.metadata.Walk && detail.metadata.Walk.length ?
+
+                                                <ScrollView
+                                                    horizontal
+                                                    style={{ height: 40, width: 360, marginLeft: 15, alignSelf: "center" }}
+                                                >
+                                                    {detail.metadata.Walk.map((item, index) => {
+                                                        return (
+
+                                                            <TouchableOpacity style={{
+                                                                height: 30, width: 100, backgroundColor: "#0471AD", marginBottom: 5, marginRight: 10,
+                                                                borderRadius: 20, justifyContent: "center", alignItems: "center"
+                                                            }} onPress={() => navigation.navigate("WebsiteScreen", { path: item })}>
+                                                                <Text style={styles.textFourStyle}>{"Walk " + (index + 1)}</Text>
+                                                            </TouchableOpacity>
+
+                                                        )
+                                                    })}
+                                                </ScrollView>
+
+
+                                                : null}
+
+                                        </View>
+                                    </View>
+                                    <View style={{ borderBottomWidth: 0.5, borderBottomColor: "#00bfff", marginTop: 5, marginBottom: 5 }} />
+
+
+
+                                    <View style={styles.container}>
+                                        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                                            <View style={{ flexDirection: "row" }}>
+                                                <Website width={17} height={24} color="#00bfff" />
+                                                <Text style={styles.textTwoStyle}>Video :</Text>
+                                            </View>
+                                            {detail.metadata.Video && detail.metadata.Video.length ?
+
+                                                <ScrollView
+                                                    horizontal
+                                                    style={{ height: 40, width: 360, marginLeft: 15, alignSelf: "center" }}
+                                                >
+                                                    {detail.metadata.Video.map((item, index) => {
+                                                        return (
+
+                                                            <TouchableOpacity style={{
+                                                                height: 30, width: 100, backgroundColor: "#0471AD", marginBottom: 5, marginRight: 10,
+                                                                borderRadius: 20, justifyContent: "center", alignItems: "center"
+                                                            }} onPress={() => navigation.navigate("WebsiteScreen", { path: item })}>
+                                                                <Text style={styles.textFourStyle}>{"Video " + (index + 1)}</Text>
+                                                            </TouchableOpacity>
+
+                                                        )
+                                                    })}
+                                                </ScrollView>
+
+
+                                                : null}
+                                        </View>
+                                    </View>
+                                    <View style={{ borderBottomWidth: 0.5, borderBottomColor: "#00bfff", marginTop: 5, marginBottom: 5 }} />
+
+
+
                                     {Object.keys(detail.metadata).map((key => {
 
-                                        if (key !== "Phone" && key !== "Address" && key !== "Website") {
+                                        if (key !== "Phone" && key !== "Address" && key !== "Website" && key !== "Walk" && key !== "Video") {
+                                           
                                             return (
 
                                                 <View style={styles.containerStyle}>

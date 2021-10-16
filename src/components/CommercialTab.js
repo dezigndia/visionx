@@ -21,44 +21,44 @@ const CommercialTab = () => {
 
     const navigation = useNavigation()
     const isFocused = useIsFocused()
-   
+
 
     useEffect(() => {
 
         getCommercialImage()
         setProgress(true)
 
-    }, [isFocused, token ])
+    }, [isFocused, token])
 
     useEffect(async () => {
         let userToken;
         userToken = "";
-        setTimeout(async()=>{
+        setTimeout(async () => {
 
-        
 
-        try {
-            let user = await AsyncStorage.getItem('response');
-            let parsed = JSON.parse(user);
-            let userToken = parsed.access_token;
 
-            let refresh = await AsyncStorage.getItem("Refresh")
-            let parsedRefresh = JSON.parse(refresh)
+            try {
+                let user = await AsyncStorage.getItem('response');
+                let parsed = JSON.parse(user);
+                let userToken = parsed.access_token;
 
-           
+                let refresh = await AsyncStorage.getItem("Refresh")
+                let parsedRefresh = JSON.parse(refresh)
 
-            if (parsedRefresh == null) {
-                setToken(userToken)
-                getCommercialImage()
-            } else {
-                setToken(parsedRefresh.access_token)
-                getCommercialImage()
+
+
+                if (parsedRefresh == null) {
+                    setToken(userToken)
+                    getCommercialImage()
+                } else {
+                    setToken(parsedRefresh.access_token)
+                    getCommercialImage()
+                }
             }
-        }
-        catch (error) {
-            console.log("error", error)
-        }
-    }, 3000)
+            catch (error) {
+                console.log("error", error)
+            }
+        }, 3000)
         return () => { AsyncStorage.removeItem("response") }
     }, [isFocused]);
 
@@ -74,8 +74,8 @@ const CommercialTab = () => {
         })
         const data = await res.json()
             .then((response) => {
-                 //console.log("GalleryImage", response)
-               
+                console.log("GalleryImage", token)
+
                 setProgress(false)
                 setCommercialImage(response.general)
 
@@ -91,12 +91,13 @@ const CommercialTab = () => {
 
 
     const _renderItem = (item) => {
-
+       // console.log("ITEM_CHECK", item)
         return (
 
             <View style={{ marginTop: 6, width: width, flex: 0.25 }}>
 
                 <TouchableOpacity onPress={() => navigation.navigate("RentalScreen", { Detail: item.item })}>
+                {/* <TouchableOpacity onPress={() => navigation.navigate("SearchScreen")}> */}
                     <View style={{ flexDirection: "row", margin: 5 }}>
                         <Image source={{ uri: item.item.photo }} style={{ height: width * 100 / 375, width: width * 85 / 375 }} />
                     </View>
