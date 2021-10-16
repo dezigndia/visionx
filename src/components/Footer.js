@@ -614,6 +614,8 @@ const Footer = () => {
 
                             setDetailModal(false)
                         }}>
+
+
                         <View style={{
 
                             height: "100%",
@@ -621,18 +623,21 @@ const Footer = () => {
                             justifyContent: "center",
                             alignItems: "center",
                             borderRadius: 10,
-                            width: "100%"
+                            width: "110%",
+                            marginTop: Platform.OS == "ios" ? 70 : null,
+                            marginBottom: Platform.OS == "ios" ? 50 : null,
+                            alignSelf: 'center'
 
                         }}>
-                            <View style={{ width: "100%", height: 60, marginBottom: 40 }}>
+                            <View style={{ width: "100%", height: 60 }}>
                                 <SearchBar
                                     placeholder="Type Here..."
                                     lightTheme
                                     round
+                                    style={{ color: "#000000" }}
                                     onChangeText={text => {
                                         searchFilterFunction(text),
                                             console.log("Text", search)
-                                        setSearch(text)
                                     }}
                                     value={search}
                                     ref={search => search}
@@ -646,12 +651,18 @@ const Footer = () => {
                                         <TouchableOpacity onPress={() => {
                                             setSearch(item)
                                             console.log("Search", search)
-                                        }} style={{ height: 50, width: "90%", borderWidth: 1, borderColor: "#000000", marginBottom: 10, backgroundColor: "#D9F5F8", justifyContent: "center", borderRadius: 10 }}>
-                                            <Text style={{ alignSelf: 'center', textAlign: "left" }}>{item}</Text>
+                                        }} style={{ height: 50, width: "95%", borderWidth: 1, borderColor: "#000000", margin: 5, backgroundColor: "#D9F5F8", justifyContent: "center", borderRadius: 10 }}>
+                                            <Text style={{ textAlign: "left", fontSize: 14, paddingLeft: 5 }}>{item}</Text>
                                         </TouchableOpacity>
                                     )
                                 }}
                             />
+
+
+
+
+
+
 
                             {/* <View style={{ marginTop: 20, width: width * 300 / 375 }}>
                                 <Text style={{ fontSize: 18 }}>Address</Text>
@@ -668,7 +679,7 @@ const Footer = () => {
                                     onChangeText={(pinCode) => setPinCode(pinCode)}
                                     style={{ borderBottomColor: "black", borderBottomWidth: 1, fontSize: 18, color: "black", height: Platform.OS === "ios" ? 40 : null, }} />
                             </View> */}
-                            <View style={{ flexDirection: "row" }}>
+                            <View style={{ flexDirection: "row", marginBottom: Platform.OS == "ios" ? 50 : null }}>
                                 <TouchableOpacity
                                     style={styles.cancelButtonStyle}
                                     onPress={() => {
@@ -822,7 +833,7 @@ const Footer = () => {
 
             {detailRentalModal === true ?
 
-                <View>
+                <View >
                     <Modal
                         transparent={true}
                         isVisible={detailRentalModal}
@@ -837,14 +848,18 @@ const Footer = () => {
                             justifyContent: "center",
                             alignItems: "center",
                             borderRadius: 10,
-                            width: "100%"
+                            width: "110%",
+                            marginTop: Platform.OS == "ios" ? 70 : null,
+                            marginBottom: Platform.OS == "ios" ? 50 : null,
+                            alignSelf: 'center'
 
                         }}>
-                            <View style={{ width: "100%", height: 60, marginBottom: 40 }}>
+                            <View style={{ width: "100%", height: 60 }}>
                                 <SearchBar
                                     placeholder="Type Here..."
                                     lightTheme
                                     round
+                                    style={{ color: "#000000" }}
                                     onChangeText={text => {
                                         searchFilterFunction(text),
                                             console.log("Text", search)
@@ -861,8 +876,8 @@ const Footer = () => {
                                         <TouchableOpacity onPress={() => {
                                             setSearch(item)
                                             console.log("Search", search)
-                                        }} style={{ height: 50, width: "90%", borderWidth: 1, borderColor: "#000000", marginBottom: 10, backgroundColor: "#D9F5F8", justifyContent: "center", borderRadius: 10 }}>
-                                            <Text style={{ alignSelf: 'center', textAlign: "left" }}>{item}</Text>
+                                        }} style={{ height: 50, width: "95%", borderWidth: 1, borderColor: "#000000", margin: 5, backgroundColor: "#D9F5F8", justifyContent: "center", borderRadius: 10 }}>
+                                            <Text style={{ textAlign: "left", fontSize: 14, paddingLeft: 5 }}>{item}</Text>
                                         </TouchableOpacity>
                                     )
                                 }}
@@ -893,7 +908,7 @@ const Footer = () => {
                                     onChangeText={(pinCode) => setPinCode(pinCode)}
                                     style={{ borderBottomColor: "black", borderBottomWidth: 1, fontSize: 18, color: "black", height: Platform.OS === "ios" ? 40 : null, }} />
                             </View> */}
-                            <View style={{ flexDirection: "row" }}>
+                            <View style={{ flexDirection: "row", marginBottom: Platform.OS == "ios" ? 50 : null }}>
                                 <TouchableOpacity
                                     style={styles.cancelButtonStyle}
                                     onPress={() => {
