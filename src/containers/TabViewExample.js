@@ -4,17 +4,17 @@ import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import CommercialTab from "../components/CommercialTab"
 import RentalTab from '../components/RentalTab';
 const CommercialRoute = () => (
-  
+
   <View style={styles.scene} />,
   <CommercialTab />
 );
 const RentalRoute = () => (
   <View style={styles.scene} />,
- <RentalTab />
+  <RentalTab />
 );
 const initialLayout = { width: Dimensions.get('window').width };
 const TabViewExample = (props) => {
-  
+
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: 'commercial', title: 'Commercial' },
@@ -74,12 +74,12 @@ const styles = StyleSheet.create({
   tab: {
     width: (Dimensions.get("window").width) / 2,
     height: 50,
-    elevation:0
+    elevation: 0
   },
   label: {
     fontSize: 20,
     fontWeight: "bold",
-    elevation:0
+    elevation: 0
   },
   activeTabTextColor: {
     color: '#1e90ff',
@@ -91,8 +91,8 @@ const styles = StyleSheet.create({
   },
   indicator: {
     backgroundColor: '#1e90ff',
-    elevation:0
-},
+    elevation: 0
+  },
 });
 
 export default TabViewExample;
