@@ -273,8 +273,9 @@ const Footer = () => {
 
                     .then((response) => response.json())
                     .then((response) => {
-
+                        console.log("Response", response)
                         if (response.status === 200) {
+                           
                             navigation.push("CommercialScreen", { Path: source.path, CommercialData: response.data })
                             setShowProgress(false)
                             setSearch("")
@@ -562,9 +563,10 @@ const Footer = () => {
                                         style={styles.cancelButtonStyle}
                                         onPress={() => {
                                             setTimeout(() => {
-                                                setShowPhysicalAddress(false)
-                                            }, 100)
-                                           setMessageModal(true)
+                                                setMessageModal(true)
+                                            }, 500)
+                                         
+                                           setShowPhysicalAddress(false)
 
 
                                         }}
@@ -743,30 +745,24 @@ const Footer = () => {
 
             {message === true ?
                 <View >
-                    <Modal
-                        transparent={true}
-                        isVisible={message}
-                        onBackButtonPress={() => {
-
-                            setMessageModal(false)
-                        }}>
-                        <View style={styles.modalStyle} >
+                    
                             <View style={{
-                                height: Platform.OS === "android" ? width * 150 / 375 : width * 200 / 375,
-                                width: width,
+                                height: "95%",
+                                width: "90%",
                                 backgroundColor: "#f8f8ff",
                                 justifyContent: "center",
                                 alignItems: "center",
                                 borderRadius: 20,
-                                marginTop: 10
+                                marginTop: 10,
+                                alignSelf:"center"
                             }}>
                                 <Text style={{
                                     color: '#3f2949',
                                     fontWeight: "bold",
-                                    fontSize: 20,
+                                    fontSize: 23,
                                     alignSelf: "center",
                                 }}>Please be informed that, this will only provide you with similar buildings that look like your image</Text>
-                                <View style={{ flexDirection: "row", marginTop: 25 }}>
+                                <View style={{ flexDirection: "row", marginTop: 45 }}>
                                     <TouchableOpacity
                                         style={styles.cancelButtonStyle}
                                         onPress={() => {
@@ -799,37 +795,30 @@ const Footer = () => {
                                     </TouchableOpacity>
                                 </View>
                             </View>
-                        </View>
-                    </Modal>
+                        
                 </View>
                 : null}
 
             {rentalMessage === true ?
                 <View >
-                    <Modal
-                        transparent={true}
-                        isVisible={rentalMessage}
-                        onBackButtonPress={() => {
-
-                            setRentalMessageModal(false)
-                        }}>
-                        <View style={styles.modalStyle} >
+                    
                             <View style={{
-                                height: Platform.OS === "android" ? width * 150 / 375 : width * 200 / 375,
-                                width: width,
+                                height:  "95%",
+                                width: "90%",
                                 backgroundColor: "#f8f8ff",
                                 justifyContent: "center",
                                 alignItems: "center",
                                 borderRadius: 20,
-                                marginTop: 10
+                                //margin: 20,
+                                alignSelf:"center"
                             }}>
                                 <Text style={{
                                     color: '#3f2949',
                                     fontWeight: "bold",
-                                    fontSize: 20,
+                                    fontSize: 23,
                                     alignSelf: "center",
                                 }}>Please be informed that, this will only provide you with similar buildings that look like your image</Text>
-                                <View style={{ flexDirection: "row", marginTop: 25 }}>
+                                <View style={{ flexDirection: "row", marginTop: 45 }}>
                                     <TouchableOpacity
                                         style={styles.cancelButtonStyle}
                                         onPress={() => {
@@ -862,16 +851,9 @@ const Footer = () => {
                                     </TouchableOpacity>
                                 </View>
                             </View>
-                        </View>
-                    </Modal>
+                        
                 </View>
                 : null}
-
-
-
-
-
-
 
             {showRentalPhysicalAddress === true ?
                 <View >
