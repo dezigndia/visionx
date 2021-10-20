@@ -747,13 +747,14 @@ const Footer = () => {
                 <View >
                     
                             <View style={{
-                                height: "95%",
+                                height: height*500/640,
                                 width: "90%",
                                 backgroundColor: "#f8f8ff",
                                 justifyContent: "center",
                                 alignItems: "center",
                                 borderRadius: 20,
-                                marginTop: 10,
+                               // marginTop: 10,
+                               marginBottom:40,
                                 alignSelf:"center"
                             }}>
                                 <Text style={{
@@ -803,13 +804,14 @@ const Footer = () => {
                 <View >
                     
                             <View style={{
-                                height:  "95%",
+                                height: height*500/640,
                                 width: "90%",
                                 backgroundColor: "#f8f8ff",
                                 justifyContent: "center",
                                 alignItems: "center",
                                 borderRadius: 20,
                                 //margin: 20,
+                                marginBottom:40,
                                 alignSelf:"center"
                             }}>
                                 <Text style={{

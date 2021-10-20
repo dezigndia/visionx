@@ -235,17 +235,9 @@ const RentalPage = ({ route }) => {
                                                         )
                                                     })}
                                                 </ScrollView>
-
-
                                                 : null}
                                         </View>
                                     </View>
-                                    <View style={{ borderBottomWidth: 0.5, borderBottomColor: "#00bfff", marginTop: 5, marginBottom: 5 }} />
-
-
-
-
-
                                     <View style={{ borderBottomWidth: 0.5, borderBottomColor: "#00bfff", marginTop: 5, marginBottom: 5 }} />
 
                                     {Object.keys(detail.metadata).map((key => {
