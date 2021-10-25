@@ -80,6 +80,7 @@ const SplashScreen = () => {
                     //     navigation.navigate("GalleryScreen")
                     // },10000)
                     
+
                 }
                 setProgress(false)
 

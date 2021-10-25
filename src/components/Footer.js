@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Image, StyleSheet, TouchableOpacity, Dimensions, PermissionsAndroid, TextInput, Text, Button, Platform, FlatList } from 'react-native'
+import { View, Image, StyleSheet, TouchableOpacity, Dimensions, PermissionsAndroid, TextInput, Text, Button, Platform, FlatList, ToastAndroid } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import ImagePicker from 'react-native-image-crop-picker';
 import ImageCropPicker from 'react-native-image-crop-picker';
@@ -100,14 +100,6 @@ const Footer = () => {
         );
     };
 
-
-    // const getCurrentLocationCoordinates = () => {
-    //     Geolocation.getCurrentPosition(data => {
-    //         setLatitude(data.coords.latitude.toString().substring(0, 8))
-    //         setLongitude(data.coords.longitude.toString().substring(0, 8))
-    //     })
-    // }
-
     useEffect(() => {
         Geolocation.getCurrentPosition(
             data => {
@@ -121,11 +113,6 @@ const Footer = () => {
             // { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
         );
     }, [latitude, longitude]);
-
-
-    // console.log("POSITION", latitude, longitude)
-
-
 
     const takePhotoFromCamera = async (props) => {
         Platform.OS === 'android' ? requestExternalStoragePermissions() : null
@@ -173,6 +160,7 @@ const Footer = () => {
 
                 const url = `${envData.domain_name}api/ML/predict/?latitude=${latitude}&longitude=${longitude}`
 
+
                 fetch(url, {
                     method: 'POST',
                     headers: {
@@ -195,12 +183,17 @@ const Footer = () => {
 
                             AsyncStorage.setItem('CommercialImage', JSON.stringify(response.data));
                             AsyncStorage.setItem('imagePath', JSON.stringify(source.path));
+                        } else {
+                            Platform.OS == "android" ? ToastAndroid.show("Something went wrong", ToastAndroid.SHORT) : null;
+                            setShowProgress(false)
+
                         }
 
                     })
 
                     .catch((err) => {
                         console.log("error", err)
+                        setShowProgress(false)
                     })
             }
         });
@@ -275,7 +268,7 @@ const Footer = () => {
                     .then((response) => {
                         console.log("Response", response)
                         if (response.status === 200) {
-                           
+
                             navigation.push("CommercialScreen", { Path: source.path, CommercialData: response.data })
                             setShowProgress(false)
                             setSearch("")
@@ -285,12 +278,17 @@ const Footer = () => {
 
                             AsyncStorage.setItem('CommercialImage', JSON.stringify(response.data));
                             AsyncStorage.setItem('imagePath', JSON.stringify(source.path));
+                        } else {
+                            Platform.OS == "android" ? ToastAndroid.show("Something went wrong", ToastAndroid.SHORT) : null;
+                            setShowProgress(false)
+
                         }
 
                     })
 
                     .catch((err) => {
                         console.log("error", err)
+                        setShowProgress(false)
                     })
             }
         });
@@ -319,20 +317,14 @@ const Footer = () => {
             });
     }, [token]);
 
-
-
-    searchFilterFunction = text => {
+    const searchFilterFunction = text => {
         const newData = serverData.data.filter(item => {
             const itemData = item.toUpperCase();
-            // console.log("ITEM", item)
             const textData = text.toUpperCase();
-            // console.log("ItemData", itemData)
             return itemData.indexOf(textData) > -1;
         });
-        //console.log("newData", newData)
         setSearchDetail(newData)
         setSearch(text)
-        // this.setState({ data: newData });
     };
 
 
@@ -384,6 +376,7 @@ const Footer = () => {
                 //const url = `${envData.domain_name}${envData.send_image_path}`
                 const url = `${envData.domain_name}api/ML/predict/?latitude=${latitude}&longitude=${longitude}`
 
+
                 fetch(url, {
                     method: 'POST',
                     headers: {
@@ -407,12 +400,16 @@ const Footer = () => {
 
                             AsyncStorage.setItem('RentalImage', JSON.stringify(response.data));
                             AsyncStorage.setItem('imagePathRental', JSON.stringify(source.path));
+                        } else {
+                            Platform.OS == "android" ? ToastAndroid.show("Something went wrong", ToastAndroid.SHORT) : null;
+                            setShowProgress(false)
                         }
 
                     })
 
                     .catch((err) => {
                         console.log("error", err)
+                        setShowProgress(false)
                     })
             }
         });
@@ -497,12 +494,17 @@ const Footer = () => {
 
                             AsyncStorage.setItem('RentalImage', JSON.stringify(response.data));
                             AsyncStorage.setItem('imagePathRental', JSON.stringify(source.path));
+                        } else {
+                            Platform.OS == "android" ? ToastAndroid.show("Something went wrong", ToastAndroid.SHORT) : null;
+                            setShowProgress(false)
+
                         }
 
                     })
 
                     .catch((err) => {
                         console.log("error", err)
+                        setShowProgress(false)
                     })
             }
         });
@@ -565,8 +567,8 @@ const Footer = () => {
                                             setTimeout(() => {
                                                 setMessageModal(true)
                                             }, 500)
-                                         
-                                           setShowPhysicalAddress(false)
+
+                                            setShowPhysicalAddress(false)
 
 
                                         }}
@@ -672,7 +674,7 @@ const Footer = () => {
                                             console.log("Text", search)
                                     }}
                                     value={search}
-                                    ref={search => search}
+                                    ref={search => search = search}
                                 //autoCorrect={false}
                                 />
                             </View>
@@ -745,115 +747,115 @@ const Footer = () => {
 
             {message === true ?
                 <View >
-                    
-                            <View style={{
-                                height: height*500/640,
-                                width: "90%",
-                                backgroundColor: "#f8f8ff",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                borderRadius: 20,
-                               // marginTop: 10,
-                               marginBottom:40,
-                                alignSelf:"center"
-                            }}>
-                                <Text style={{
-                                    color: '#3f2949',
-                                    fontWeight: "bold",
-                                    fontSize: 23,
-                                    alignSelf: "center",
-                                }}>Please be informed that, this will only provide you with similar buildings that look like your image</Text>
-                                <View style={{ flexDirection: "row", marginTop: 45 }}>
-                                    <TouchableOpacity
-                                        style={styles.cancelButtonStyle}
-                                        onPress={() => {
 
-                                            setTimeout(() => {
-                                                choosePhotoFromLibrary()
-                                                setMessageModal(false)
-                                            }, 100)
-                                            setShowPhysicalAddress(false)
-                                          
+                    <View style={{
+                        height: height * 500 / 640,
+                        width: "90%",
+                        backgroundColor: "#f8f8ff",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderRadius: 20,
+                        // marginTop: 10,
+                        marginBottom: 40,
+                        alignSelf: "center"
+                    }}>
+                        <Text style={{
+                            color: '#3f2949',
+                            fontWeight: "bold",
+                            fontSize: 23,
+                            alignSelf: "center",
+                        }}>Please be informed that, this will only provide you with similar buildings that look like your image</Text>
+                        <View style={{ flexDirection: "row", marginTop: 45 }}>
+                            <TouchableOpacity
+                                style={styles.cancelButtonStyle}
+                                onPress={() => {
 
-
-                                        }}
-                                    >
-                                        <Text style={styles.textStyle}>Ok</Text>
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity
-                                        style={styles.cancelButtonStyle}
-                                        onPress={() => {
-                                            setTimeout(() => {
-                                                setShowPhysicalAddress(false)
-                                            }, 100)
-                                            setMessageModal(false)
+                                    setTimeout(() => {
+                                        choosePhotoFromLibrary()
+                                        setMessageModal(false)
+                                    }, 100)
+                                    setShowPhysicalAddress(false)
 
 
-                                        }}
-                                    >
-                                        <Text style={styles.textStyle}>Cancel</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        
+
+                                }}
+                            >
+                                <Text style={styles.textStyle}>Ok</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={styles.cancelButtonStyle}
+                                onPress={() => {
+                                    setTimeout(() => {
+                                        setShowPhysicalAddress(false)
+                                    }, 100)
+                                    setMessageModal(false)
+
+
+                                }}
+                            >
+                                <Text style={styles.textStyle}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
                 </View>
                 : null}
 
             {rentalMessage === true ?
                 <View >
-                    
-                            <View style={{
-                                height: height*500/640,
-                                width: "90%",
-                                backgroundColor: "#f8f8ff",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                borderRadius: 20,
-                                //margin: 20,
-                                marginBottom:40,
-                                alignSelf:"center"
-                            }}>
-                                <Text style={{
-                                    color: '#3f2949',
-                                    fontWeight: "bold",
-                                    fontSize: 23,
-                                    alignSelf: "center",
-                                }}>Please be informed that, this will only provide you with similar buildings that look like your image</Text>
-                                <View style={{ flexDirection: "row", marginTop: 45 }}>
-                                    <TouchableOpacity
-                                        style={styles.cancelButtonStyle}
-                                        onPress={() => {
 
-                                            setTimeout(() => {
-                                                chooseRentalPhotoFromLibrary()
-                                                setRentalMessageModal(false)
-                                            }, 100)
-                                            setShowRentalPhysicalAddress(false)
-                                          
+                    <View style={{
+                        height: height * 500 / 640,
+                        width: "90%",
+                        backgroundColor: "#f8f8ff",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderRadius: 20,
+                        //margin: 20,
+                        marginBottom: 40,
+                        alignSelf: "center"
+                    }}>
+                        <Text style={{
+                            color: '#3f2949',
+                            fontWeight: "bold",
+                            fontSize: 23,
+                            alignSelf: "center",
+                        }}>Please be informed that, this will only provide you with similar buildings that look like your image</Text>
+                        <View style={{ flexDirection: "row", marginTop: 45 }}>
+                            <TouchableOpacity
+                                style={styles.cancelButtonStyle}
+                                onPress={() => {
 
-
-                                        }}
-                                    >
-                                        <Text style={styles.textStyle}>Ok</Text>
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity
-                                        style={styles.cancelButtonStyle}
-                                        onPress={() => {
-                                            setTimeout(() => {
-                                                setShowRentalPhysicalAddress(false)
-                                            }, 100)
-                                            setRentalMessageModal(false)
+                                    setTimeout(() => {
+                                        chooseRentalPhotoFromLibrary()
+                                        setRentalMessageModal(false)
+                                    }, 100)
+                                    setShowRentalPhysicalAddress(false)
 
 
-                                        }}
-                                    >
-                                        <Text style={styles.textStyle}>Cancel</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        
+
+                                }}
+                            >
+                                <Text style={styles.textStyle}>Ok</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={styles.cancelButtonStyle}
+                                onPress={() => {
+                                    setTimeout(() => {
+                                        setShowRentalPhysicalAddress(false)
+                                    }, 100)
+                                    setRentalMessageModal(false)
+
+
+                                }}
+                            >
+                                <Text style={styles.textStyle}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
                 </View>
                 : null}
 
@@ -1012,7 +1014,7 @@ const Footer = () => {
                                             console.log("Text", search)
                                     }}
                                     value={search}
-                                    ref={search => search}
+                                    ref={search => search = search}
                                 //autoCorrect={false}
                                 />
                             </View>

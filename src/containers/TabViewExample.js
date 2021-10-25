@@ -18,7 +18,7 @@ const TabViewExample = (props) => {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: 'commercial', title: 'Commercial' },
-    { key: 'rental', title: 'Rental' },
+    { key: 'rental', title: 'Home' },
   ]);
 
   const renderScene = SceneMap({
