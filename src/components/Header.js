@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, StyleSheet, Dimensions, TouchableOpacity, Platform } from 'react-native'
+import { Text, View, StyleSheet, Dimensions, TouchableOpacity, Platform, Image } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native'
 
@@ -14,7 +14,14 @@ const Header = (props) => {
                 <Text style={styles.textStyle}>{props.headerText}</Text>
             </View>
             {/* </View> */}
-            <TouchableOpacity style={styles.userIconStyle}
+
+            <TouchableOpacity onPress={() => props.routing()} style={styles.userIconStyle}
+            // onPress={() => navigation.navigate("Profile")}
+            >
+                <Image source={props.refreshIcon} style={{ height: 30, width: 30 }} />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.bellIconStyle}
                 onPress={() => navigation.navigate("Profile")}>
                 <Icon name="account-outline" size={30} color="black" />
             </TouchableOpacity>
@@ -29,21 +36,26 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         backgroundColor: '#F8F8F8',
         height: 70,
-         elevation: 4,
-         marginTop: Platform.OS === "ios" ? 30 : null
+        elevation: 4,
+        marginTop: Platform.OS === "ios" ? 30 : null
 
     },
+    bellIconStyle: {
+        justifyContent: "center",
+        alignItems: "flex-end",
+        marginRight: 14,
+    },
     textViewStyle: {
-        alignSelf:"center",
+        alignSelf: "center",
         justifyContent: "center",
         alignItems: "center",
-        marginLeft:30
+        marginLeft: 30
     },
     textStyle: {
         fontSize: 20,
         marginTop: 20,
         marginBottom: 20,
-        fontWeight:"bold"
+        fontWeight: "bold"
     },
     userIconStyle: {
         flex: 1,
@@ -53,7 +65,7 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end",
         alignItems: "flex-end"
     },
-   
+
 
 })
 
