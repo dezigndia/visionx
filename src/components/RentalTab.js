@@ -317,15 +317,16 @@ const RentalTab = () => {
         Geolocation.getCurrentPosition(
             data => {
                 // console.log("DATA", data)
-                setLatitude(data.coords.latitude.toString().substring(0, 8))
-                setLongitude(data.coords.longitude.toString().substring(0, 8))
+                setLatitude(data.coords.latitude.toString())
+                setLongitude(data.coords.longitude.toString())
             },
             error => {
                 console.log(error.code, error.message);
             }
             // { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
         );
-    }, [latitude, longitude]);
+        // console.log("POSITION_VERIFY", latitude, longitude)
+    }, [latitude, longitude, showRentalModal]);
 
     const getRentalImage = async () => {
         // setProgress(true)

@@ -45,8 +45,8 @@ const GalleryScreen = ({ route }) => {
         Geolocation.getCurrentPosition(
             data => {
                 // console.log("DATA", data)
-                setLatitude(data.coords.latitude.toString().substring(0, 8))
-                setLongitude(data.coords.longitude.toString().substring(0, 8))
+                setLatitude(data.coords.latitude.toString())
+                setLongitude(data.coords.longitude.toString())
             },
             error => {
                 console.log(error.code, error.message);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Image, StyleSheet, TouchableOpacity, Dimensions, PermissionsAndroid, TextInput, Text, Button, Platform, FlatList, ToastAndroid } from 'react-native'
+import { View, Image, StyleSheet, TouchableOpacity, Dimensions, PermissionsAndroid, TextInput, Text, Button, Platform, FlatList, ToastAndroid, Alert } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import ImagePicker from 'react-native-image-crop-picker';
 import ImageCropPicker from 'react-native-image-crop-picker';
@@ -104,15 +104,16 @@ const Footer = () => {
         Geolocation.getCurrentPosition(
             data => {
                 // console.log("DATA", data)
-                setLatitude(data.coords.latitude.toString().substring(0, 8))
-                setLongitude(data.coords.longitude.toString().substring(0, 8))
+                setLatitude(data.coords.latitude.toString())
+                setLongitude(data.coords.longitude.toString())
             },
             error => {
                 console.log(error.code, error.message);
             }
             // { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
         );
-    }, [latitude, longitude]);
+        // console.log("POSITION_VERIFY", latitude, longitude)
+    }, [latitude, longitude, showModal, showRentalModal]);
 
     const takePhotoFromCamera = async (props) => {
         Platform.OS === 'android' ? requestExternalStoragePermissions() : null
@@ -159,8 +160,8 @@ const Footer = () => {
                 setShowModal(false);
 
                 const url = `${envData.domain_name}api/ML/predict/?latitude=${latitude}&longitude=${longitude}`
-
-
+                // console.log("Positions", latitude, longitude)
+                // console.log("URL", url)
                 fetch(url, {
                     method: 'POST',
                     headers: {
@@ -171,12 +172,12 @@ const Footer = () => {
                     body: JSON.stringify({
                         photo: source.data,
                         Category: 2,
-                        address: 234,
-                        pincode: 470002
+
                     })
                 })
                     .then((response) => response.json())
                     .then((response) => {
+                        setShowProgress(false)
                         if (response.status === 200) {
                             navigation.push("CommercialScreen", { Path: source.path, CommercialData: response.data })
                             setShowProgress(false)
@@ -372,11 +373,7 @@ const Footer = () => {
 
                 setShowRentalModal(false);
 
-
-                //const url = `${envData.domain_name}${envData.send_image_path}`
                 const url = `${envData.domain_name}api/ML/predict/?latitude=${latitude}&longitude=${longitude}`
-
-
                 fetch(url, {
                     method: 'POST',
                     headers: {
