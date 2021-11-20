@@ -374,6 +374,7 @@ const Footer = () => {
                 setShowRentalModal(false);
 
                 const url = `${envData.domain_name}api/ML/predict/?latitude=${latitude}&longitude=${longitude}`
+             //   console.log("URL", url)
                 fetch(url, {
                     method: 'POST',
                     headers: {

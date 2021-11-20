@@ -37,7 +37,7 @@ const SplashScreen = () => {
 
             let refresh = await AsyncStorage.getItem('Refresh')
             let parsedRefresh = JSON.parse(refresh)
-           
+
             if (parsedRefresh == null) {
                 getRefreshToken(parsed.refresh_token)
             } else {
@@ -72,14 +72,14 @@ const SplashScreen = () => {
         })
         const data = await res.json()
             .then((response) => {
-              
+
                 setValue(response.access_token)
                 if (response.access_token !== "") {
-                     setSplashScreen(false)
+                    setSplashScreen(false)
                     // setTimeout(()=>{
                     //     navigation.navigate("GalleryScreen")
                     // },10000)
-                    
+
 
                 }
                 setProgress(false)
@@ -99,9 +99,9 @@ const SplashScreen = () => {
 
     useEffect(() => {
         // if (value == null) {
-            setTimeout(() => {
-                setSplashScreen(false)
-            }, 8000)
+        setTimeout(() => {
+            setSplashScreen(false)
+        }, 8000)
         // }
     }, [])
 
@@ -111,7 +111,7 @@ const SplashScreen = () => {
                 <ImageBackground source={require("../assets/splashImage.png")}
                     style={{ width: width * 320 / 360, height: width, flex: 0.6, alignItems: "center" }} />
                 {/* <Text style={styles.splashText}>Welcome to VisionX!!</Text> */}
-                {splashScreen === false ? navigation.navigate("Login") : null}
+                {splashScreen === false ? navigation.navigate("OnBoarding") : null}
             </View>
         </View>
     )
