@@ -112,7 +112,7 @@ const Footer = () => {
             }
             // { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
         );
-        // console.log("POSITION_VERIFY", latitude, longitude)
+         console.log("POSITION_VERIFY123", latitude, longitude)
     }, [latitude, longitude, showModal, showRentalModal]);
 
     const takePhotoFromCamera = async (props) => {

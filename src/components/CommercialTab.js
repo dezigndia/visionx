@@ -109,7 +109,7 @@ const CommercialTab = () => {
         })
         const data = await res.json()
             .then((response) => {
-                console.log("GalleryImage", response)
+                //console.log("GalleryImage", response)
 
                 setProgress(false)
                 setCommercialImage(response.general)

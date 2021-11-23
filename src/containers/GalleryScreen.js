@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { View, StyleSheet, Dimensions, BackHandler, Alert, Text, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, Dimensions, BackHandler, Alert, Text, TouchableOpacity, Platform } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import Header from '../components/Header'
 import TabViewExample from './TabViewExample'
 import Footer from '../components/Footer';
 import Geolocation from '@react-native-community/geolocation'
 import Modal from 'react-native-modal'
+import { useIsFocused } from '@react-navigation/native'
 
 
 const { height, width } = Dimensions.get("window")
 
-const GalleryScreen = ({ route }) => {
+const GalleryScreen = () => {
     const navigation = useNavigation()
+    const isFocused = useIsFocused()
     const [latitude, setLatitude] = useState("")
     const [longitude, setLongitude] = useState("")
     const [showModal, setShowModal] = useState(false)
@@ -42,17 +44,21 @@ const GalleryScreen = ({ route }) => {
     }, []);
 
     useEffect(() => {
+        fetchLocation()
+    }, [isFocused, showModal]);
+    console.log("POSITION_VERIFY", latitude, longitude, showModal)
+
+    const fetchLocation = () => {
         Geolocation.getCurrentPosition(
-            data => {
-                // console.log("DATA", data)
-                setLatitude(data.coords.latitude.toString())
-                setLongitude(data.coords.longitude.toString())
+            position => {
+                console.log(position);
+                setLatitude(position.coords.latitude.toString())
+                setLongitude(position.coords.longitude.toString())
+
             },
-            error => {
-                console.log(error.code, error.message);
-            }
+            error => console.log(JSON.stringify(error)),
         );
-    }, [latitude, longitude]);
+    };
 
     return (
         <View style={{ flex: 1 }}>
